@@ -4,151 +4,286 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>درآمد و هزینه</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0e8466" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0b1514" media="(prefers-color-scheme: dark)">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="درآمد و هزینه">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&display=swap">
 <style>
-/* Layout: one phone column. Gradient balance card on top, grouped ledger below, four-slot tab bar with a raised "+" slot. */
+/* Operate surface: a daily-use money tool. Calm teal brand, one gold accent (the + coin), generous 44px+ targets,
+   hairline grouped lists, category avatars for fast scanning, and short ease-out motion that never blocks input. */
 :root {
-  --bg: #f1f6f5;
+  --bg: #f3f7f6;
   --surface: #ffffff;
-  --fg: #10211f;
-  --muted: #587070;
-  --line: #d9e5e2;
-  --chip: #e6efed;
-  --brand: #0e8466;
+  --surface-2: #edf3f1;
+  --fg: #0e1f1c;
+  --muted: #55696a;
+  --line: #e0e9e6;
+  --brand: #08705a;
+  --brand-soft: #d5efe6;
   --on-brand: #ffffff;
-  --hero-a: #0e8466;
-  --hero-b: #0f4a6b;
-  --income: #17803d;
-  --expense: #c43d4b;
-  --gold: #f2b632;
-  --warn-bg: #fff4d6;
-  --warn-fg: #5c4300;
-  --shadow: 0 6px 24px rgba(16, 33, 31, .12);
+  --hero-a: #0b8a69;
+  --hero-b: #0d4668;
+  --income: #137a3a;
+  --income-soft: #dcf3e4;
+  --expense: #c23a48;
+  --gold: #f4b92f;
+  --gold-ink: #3a2a00;
+  --warn-solid: #e3a008;
+  --warn-text: #865500;
+  --warn-bg: #fff3d1;
+  --warn-fg: #5a4200;
+  --shadow: 0 8px 28px rgba(14, 31, 28, .14);
+  --shadow-sm: 0 1px 2px rgba(14, 31, 28, .06);
+  --ease-out: cubic-bezier(.23, 1, .32, 1);
+  --ease-drawer: cubic-bezier(.32, .72, 0, 1);
+  --ava-bg: 74% 90%;
+  --ava-fg: 62% 26%;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #0b1514; --surface: #132220; --fg: #e5f0ee; --muted: #9bb2ae; --line: #25403c;
-    --chip: #1b2f2c; --brand: #38c4a9; --on-brand: #04211b; --hero-a: #0c7058; --hero-b: #0e3d59;
-    --income: #52c982; --expense: #ff818c; --warn-bg: #3a2f10; --warn-fg: #ffe3a0;
-    --shadow: 0 6px 24px rgba(0, 0, 0, .5);
+    --bg: #0a1211; --surface: #121e1c; --surface-2: #1a2a27; --fg: #e6f1ef; --muted: #9db4b0; --line: #223633;
+    --brand: #3fcfb0; --brand-soft: #16372f; --on-brand: #04211b; --hero-a: #0b6f58; --hero-b: #0c3a57;
+    --income: #5bd48c; --income-soft: #17352a; --expense: #ff8a94; --gold-ink: #2e2200;
+    --warn-solid: #f0b429; --warn-text: #f5cf72; --warn-bg: #3a2f10; --warn-fg: #ffe3a0;
+    --shadow: 0 8px 28px rgba(0, 0, 0, .55); --shadow-sm: none;
+    --ava-bg: 38% 22%; --ava-fg: 78% 80%;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #0b1514; --surface: #132220; --fg: #e5f0ee; --muted: #9bb2ae; --line: #25403c;
-  --chip: #1b2f2c; --brand: #38c4a9; --on-brand: #04211b; --hero-a: #0c7058; --hero-b: #0e3d59;
-  --income: #52c982; --expense: #ff818c; --warn-bg: #3a2f10; --warn-fg: #ffe3a0;
-  --shadow: 0 6px 24px rgba(0, 0, 0, .5);
+  --bg: #0a1211; --surface: #121e1c; --surface-2: #1a2a27; --fg: #e6f1ef; --muted: #9db4b0; --line: #223633;
+  --brand: #3fcfb0; --brand-soft: #16372f; --on-brand: #04211b; --hero-a: #0b6f58; --hero-b: #0c3a57;
+  --income: #5bd48c; --income-soft: #17352a; --expense: #ff8a94; --gold-ink: #2e2200;
+  --warn-solid: #f0b429; --warn-text: #f5cf72; --warn-bg: #3a2f10; --warn-fg: #ffe3a0;
+  --shadow: 0 8px 28px rgba(0, 0, 0, .55); --shadow-sm: none;
+  --ava-bg: 38% 22%; --ava-fg: 78% 80%;
   color-scheme: dark;
 }
-* { box-sizing: border-box; }
-body { margin: 0; }
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.7 "Vazirmatn", Tahoma, system-ui, sans-serif; touch-action: manipulation; }
 [hidden] { display: none !important; }
-body { background: var(--bg); color: var(--fg); font: 15px/1.7 "Vazirmatn", Tahoma, system-ui, sans-serif; }
 .page {
   max-width: 560px; margin: 0 auto; min-height: 100vh;
-  padding-top: calc(14px + env(safe-area-inset-top, 0px)); padding-bottom: 120px;
+  padding-top: calc(14px + env(safe-area-inset-top, 0px)); padding-bottom: 132px;
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
 }
 .num { direction: ltr; unicode-bidi: isolate; display: inline-block; font-variant-numeric: tabular-nums; }
 button { font: inherit; color: inherit; }
 :focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+svg { display: block; }
 
-/* hero */
-.hero { background: linear-gradient(160deg, var(--hero-a), var(--hero-b)); color: #fff; border-radius: 24px; padding: 18px 18px 16px; }
-.hero .label { font-size: 13px; opacity: .88; }
-.hero .bal { font-size: 36px; font-weight: 700; line-height: 1.25; }
-.hero .bal.neg { color: #ffd3d7; }
-.hero .unit { font-size: 14px; font-weight: 500; opacity: .88; margin-inline-start: 8px; }
-.stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
-.stat { background: rgba(255, 255, 255, .15); border-radius: 14px; padding: 9px 12px; min-width: 0; }
-.stat .k { font-size: 12px; opacity: .88; }
-.stat .v { font-size: 17px; font-weight: 500; }
+/* ---------- hero ---------- */
+.hero { position: relative; overflow: hidden; color: #fff; border-radius: 28px; padding: 20px 20px 18px;
+  background: radial-gradient(120% 90% at 100% 0%, rgba(255, 255, 255, .16), transparent 55%), linear-gradient(155deg, var(--hero-a), var(--hero-b)); box-shadow: var(--shadow); }
+.hero .label { font-size: 13px; opacity: .86; font-weight: 500; }
+.hero .bal { font-size: 40px; font-weight: 700; line-height: 1.3; }
+.hero .bal.neg { color: #ffd6da; }
+.hero .unit { font-size: 14px; font-weight: 500; opacity: .86; margin-inline-start: 8px; }
+.stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
+.stat { background: rgba(255, 255, 255, .14); border-radius: 16px; padding: 10px 12px; min-width: 0; }
+.stat .k { font-size: 12px; opacity: .9; display: flex; align-items: center; gap: 6px; }
+.stat .k i { width: 18px; height: 18px; border-radius: 50%; background: rgba(255, 255, 255, .22); display: grid; place-items: center; }
+.stat .k svg { width: 12px; height: 12px; }
+.stat .v { font-size: 17px; font-weight: 600; }
 
-/* lists */
-.sec-h { font-size: 12.5px; color: var(--muted); margin: 20px 4px 6px; font-weight: 500; }
-.list { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; }
+/* ---------- lists ---------- */
+.sec-h { font-size: 13px; color: var(--muted); margin: 22px 4px 8px; font-weight: 600; }
+.sec-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; }
+.sec-row .linkbtn { padding: 0 4px 6px; min-height: 36px; font-weight: 600; }
+.list { background: var(--surface); border-radius: 20px; overflow: hidden; box-shadow: var(--shadow-sm), 0 0 0 1px var(--line); }
 .item + .item { border-top: 1px solid var(--line); }
-.row { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 0 12px; width: 100%; padding: 11px 14px; background: none; border: 0; text-align: start; cursor: pointer; min-height: 56px; }
-.row .t { font-weight: 500; overflow-wrap: anywhere; }
-.row .s { font-size: 12.5px; color: var(--muted); overflow-wrap: anywhere; }
-.amt { font-weight: 700; white-space: nowrap; }
+.row { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 0 12px; width: 100%; padding: 11px 14px; background: none; border: 0; text-align: start; cursor: pointer; min-height: 62px;
+  transition: background-color 120ms var(--ease-out), transform 140ms var(--ease-out); }
+.row:active { transform: scale(.985); background: var(--surface-2); }
+@media (hover: hover) and (pointer: fine) { .row:hover { background: var(--surface-2); } }
+.row .t { font-weight: 600; overflow-wrap: anywhere; line-height: 1.5; }
+.row .s { font-size: 12.5px; color: var(--muted); overflow-wrap: anywhere; line-height: 1.5; }
+.ava { width: 40px; height: 40px; border-radius: 14px; display: grid; place-items: center; font-weight: 700; font-size: 16px;
+  background: hsl(var(--h, 160) var(--ava-bg)); color: hsl(var(--h, 160) var(--ava-fg)); }
+.ava.inc { background: var(--income-soft); color: var(--income); }
+.ava svg { width: 18px; height: 18px; }
+.tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 3px; }
+.amt { font-weight: 700; white-space: nowrap; font-size: 15.5px; }
 .amt.inc { color: var(--income); }
 .amt.exp { color: var(--expense); }
-.acts { display: flex; gap: 8px; padding: 0 14px 12px; align-items: center; flex-wrap: wrap; }
+.acts { display: flex; gap: 8px; padding: 0 14px 12px 14px; align-items: center; flex-wrap: wrap; }
 .acts .msg { font-size: 13px; color: var(--muted); flex: 1 1 100%; }
-.empty { background: var(--surface); border: 1px dashed var(--line); border-radius: 16px; padding: 28px 20px; text-align: center; color: var(--muted); }
+.empty { background: var(--surface); border-radius: 20px; padding: 30px 20px; text-align: center; color: var(--muted); box-shadow: 0 0 0 1px var(--line); margin-top: 14px; }
 .empty b { display: block; color: var(--fg); font-size: 16px; margin-bottom: 4px; }
-.notice { background: var(--warn-bg); color: var(--warn-fg); border-radius: 14px; padding: 12px 14px; margin-top: 14px; font-size: 13.5px; }
+.notice { background: var(--warn-bg); color: var(--warn-fg); border-radius: 16px; padding: 12px 14px; margin-top: 14px; font-size: 13.5px; }
 
-/* report */
-.bar-row { padding: 10px 14px; }
+/* ---------- search & filter ---------- */
+.toolbar { display: flex; gap: 8px; margin-top: 14px; }
+.search { flex: 1; display: flex; align-items: center; gap: 8px; background: var(--surface); border-radius: 16px; padding: 0 14px; box-shadow: 0 0 0 1px var(--line); min-height: 48px; color: var(--muted);
+  transition: box-shadow 140ms var(--ease-out); }
+.search:focus-within { box-shadow: 0 0 0 2px var(--brand); }
+.search svg { width: 18px; height: 18px; flex: none; }
+.search input { border: 0; background: none; min-height: 44px; padding: 0; border-radius: 0; color: var(--fg); outline: 0; -webkit-appearance: none; appearance: none; }
+.search input::-webkit-search-cancel-button { -webkit-appearance: none; }
+.fbtn { position: relative; width: 48px; flex: none; border: 0; border-radius: 16px; background: var(--surface); box-shadow: 0 0 0 1px var(--line); display: grid; place-items: center; cursor: pointer; color: var(--fg);
+  transition: transform 140ms var(--ease-out); }
+.fbtn:active { transform: scale(.94); }
+.fbtn svg { width: 20px; height: 20px; }
+.fbtn .dot { position: absolute; top: -5px; inset-inline-end: -5px; min-width: 20px; height: 20px; padding: 0 5px; border-radius: 10px; background: var(--brand); color: var(--on-brand); font-style: normal; font-size: 11.5px; font-weight: 700; display: grid; place-items: center; line-height: 1; }
+.fchips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.fchip { border: 0; background: var(--brand-soft); color: var(--brand); border-radius: 99px; padding: 5px 12px; font-size: 13px; font-weight: 600; cursor: pointer; min-height: 32px; transition: transform 140ms var(--ease-out); }
+.fchip:active { transform: scale(.96); }
+.fsum { display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: center; font-size: 13px; color: var(--muted); margin: 14px 4px 0; }
+.fsum b { color: var(--fg); }
+
+/* ---------- tags ---------- */
+.tag { display: inline-flex; align-items: center; gap: 4px; font: inherit; font-size: 12px; line-height: 1.5; padding: 0 9px; border-radius: 99px; background: var(--surface-2); color: var(--muted); border: 0; }
+button.tag { min-height: 32px; padding: 0 12px; cursor: pointer; font-size: 13px; transition: transform 140ms var(--ease-out); }
+button.tag:active { transform: scale(.95); }
+button.tag.on { background: var(--brand-soft); color: var(--brand); font-weight: 600; }
+.taginput { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; background: var(--surface-2); border: 1px solid var(--line); border-radius: 14px; padding: 6px 8px; min-height: 48px; }
+.taginput:focus-within { border-color: var(--brand); box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 22%, transparent); }
+#fTagChips { display: contents; }
+.taginput input { flex: 1 1 120px; min-width: 100px; border: 0; background: none; padding: 4px; min-height: 36px; outline: 0; border-radius: 0; }
+.tagsug { display: flex; flex-wrap: wrap; gap: 6px; }
+.presets { display: flex; flex-wrap: wrap; gap: 6px; }
+
+/* ---------- plan: budgets & goals ---------- */
+.plan-sum { background: var(--surface); border-radius: 20px; padding: 14px 16px 16px; box-shadow: var(--shadow-sm), 0 0 0 1px var(--line); margin-bottom: 12px; }
+.plan-sum .k { font-size: 12.5px; color: var(--muted); }
+.plan-sum .v { font-size: 26px; font-weight: 700; line-height: 1.4; }
+.plan-sum .v small { font-size: 13px; font-weight: 500; color: var(--muted); }
+.plan-sum .v.neg { color: var(--expense); }
+.plan-sum .meta { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13px; color: var(--muted); margin: 2px 0 10px; }
+.brow { display: block; width: 100%; text-align: start; background: none; border: 0; padding: 13px 16px 14px; cursor: pointer; min-height: 72px; transition: background-color 120ms var(--ease-out), transform 140ms var(--ease-out); }
+.brow + .brow { border-top: 1px solid var(--line); }
+.brow:active { transform: scale(.985); background: var(--surface-2); }
+@media (hover: hover) and (pointer: fine) { .brow:hover { background: var(--surface-2); } }
+.bn { font-weight: 600; overflow-wrap: anywhere; }
+.bsub { display: flex; justify-content: space-between; gap: 10px; font-size: 12.5px; color: var(--muted); margin-top: 7px; flex-wrap: wrap; }
+.bsub .ok { color: var(--income); } .bsub .warn { color: var(--warn-text); } .bsub .over { color: var(--expense); font-weight: 600; }
+.gsum .bsub { margin-top: 8px; }
+
+/* ---------- report ---------- */
+.bar-row { padding: 12px 16px; }
 .bar-row + .bar-row { border-top: 1px solid var(--line); }
-.bar-top { display: flex; justify-content: space-between; gap: 10px; font-size: 14px; }
-.bar { height: 8px; border-radius: 99px; background: var(--chip); margin-top: 6px; overflow: hidden; }
-.bar > i { display: block; height: 100%; background: var(--expense); border-radius: 99px; }
+.bar-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 14px; }
+.bar { height: 8px; border-radius: 99px; background: var(--surface-2); margin-top: 8px; overflow: hidden; }
+.bar.tall { height: 10px; }
+.bar > i { display: block; height: 100%; background: var(--expense); border-radius: 99px; transform-origin: right center; }
+.bar > i.ok { background: var(--income); }
+.bar > i.warn { background: var(--warn-solid); }
+.bar > i.over { background: var(--expense); }
+.bar > i.goalbar { background: var(--brand); }
 .tbl-wrap { overflow-x: auto; }
 table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
-th, td { padding: 9px 12px; text-align: end; white-space: nowrap; }
+th, td { padding: 10px 14px; text-align: end; white-space: nowrap; }
 th:first-child, td:first-child { text-align: start; }
-thead th { color: var(--muted); font-weight: 500; font-size: 12px; border-bottom: 1px solid var(--line); }
+thead th { color: var(--muted); font-weight: 600; font-size: 12px; border-bottom: 1px solid var(--line); }
 tbody tr + tr td { border-top: 1px solid var(--line); }
 
-/* more tab */
-.menu { display: grid; gap: 0; }
-.menu button { display: flex; justify-content: space-between; align-items: center; width: 100%; background: none; border: 0; padding: 14px; text-align: start; cursor: pointer; min-height: 52px; }
+/* ---------- more tab ---------- */
+.menu { display: grid; }
+.menu button { display: flex; justify-content: space-between; align-items: center; width: 100%; background: none; border: 0; padding: 14px 16px; text-align: start; cursor: pointer; min-height: 60px; transition: background-color 120ms var(--ease-out), transform 140ms var(--ease-out); }
+.menu button:active { transform: scale(.985); background: var(--surface-2); }
+@media (hover: hover) and (pointer: fine) { .menu button:hover { background: var(--surface-2); } }
 .menu button + button { border-top: 1px solid var(--line); }
-.menu small { color: var(--muted); font-size: 12.5px; display: block; }
+.menu button > span:first-child { font-weight: 600; }
+.menu button > span[aria-hidden] { color: var(--muted); font-size: 20px; }
+.menu small { color: var(--muted); font-size: 12.5px; display: block; font-weight: 400; }
 .hint { font-size: 13px; color: var(--muted); margin: 10px 4px; }
+.steps { margin: 0 0 8px; padding-inline-start: 22px; display: grid; gap: 10px; }
+.steps li::marker { color: var(--brand); font-weight: 700; }
 
-/* controls */
-.btn { min-height: 46px; border: 0; border-radius: 12px; padding: 0 18px; font-weight: 500; cursor: pointer; }
+/* ---------- controls ---------- */
+.btn { min-height: 48px; border: 0; border-radius: 14px; padding: 0 18px; font-weight: 600; cursor: pointer; transition: transform 140ms var(--ease-out), opacity 140ms var(--ease-out), filter 140ms var(--ease-out); }
+.btn:active { transform: scale(.97); }
+.btn:disabled { opacity: .55; cursor: default; }
 .btn.primary { background: var(--brand); color: var(--on-brand); }
-.btn.ghost { background: var(--chip); }
+.btn.ghost { background: var(--surface-2); }
 .btn.danger { background: var(--expense); color: #fff; }
-.btn.sm { min-height: 38px; padding: 0 14px; font-size: 14px; }
+.btn.sm { min-height: 40px; padding: 0 14px; font-size: 14px; border-radius: 12px; }
 .btn.block { width: 100%; }
-.seg { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; background: var(--chip); padding: 4px; border-radius: 14px; margin-bottom: 14px; }
-.seg button { border: 0; background: none; min-height: 42px; border-radius: 10px; cursor: pointer; font-weight: 500; }
-.seg button.on { background: var(--surface); box-shadow: 0 1px 4px rgba(0,0,0,.15); }
-.seg button.on[data-type="income"], .seg button.on[data-v="inc"] { color: var(--income); }
-.seg button.on[data-type="expense"] { color: var(--expense); }
-.field { display: grid; gap: 5px; margin-bottom: 12px; }
-.field label { font-size: 13px; color: var(--muted); }
-input, select, textarea { font: inherit; font-size: 16px; color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; min-height: 46px; width: 100%; }
+@media (hover: hover) and (pointer: fine) { .btn.primary:hover, .btn.danger:hover { filter: brightness(1.06); } .btn.ghost:hover { filter: brightness(.97); } }
+.seg { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; background: var(--surface-2); padding: 4px; border-radius: 16px; margin-bottom: 14px; }
+.seg.three { grid-template-columns: 1fr 1fr 1fr; }
+.seg button { border: 0; background: none; min-height: 44px; border-radius: 12px; cursor: pointer; font-weight: 600; color: var(--muted); transition: background-color 160ms var(--ease-out), color 160ms var(--ease-out), box-shadow 160ms var(--ease-out), transform 140ms var(--ease-out); }
+.seg button:active { transform: scale(.97); }
+.seg button.on { background: var(--surface); color: var(--fg); box-shadow: 0 1px 3px rgba(0, 0, 0, .14); }
+.seg button.on[data-type="income"], .seg button.on[data-ft="income"] { color: var(--income); }
+.seg button.on[data-type="expense"], .seg button.on[data-ft="expense"] { color: var(--expense); }
+.field { display: grid; gap: 6px; margin-bottom: 14px; }
+.field label { font-size: 13px; color: var(--muted); font-weight: 500; }
+input, select, textarea { font: inherit; font-size: 16px; color: var(--fg); background: var(--surface-2); border: 1px solid var(--line); border-radius: 14px; padding: 10px 14px; min-height: 48px; width: 100%;
+  transition: border-color 140ms var(--ease-out), box-shadow 140ms var(--ease-out); }
+input:focus, select:focus, textarea:focus { outline: 0; border-color: var(--brand); box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 22%, transparent); }
+input::placeholder, textarea::placeholder { color: var(--muted); opacity: .75; }
 textarea { resize: vertical; }
 .two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.warn { background: var(--warn-bg); color: var(--warn-fg); border-radius: 14px; padding: 12px 14px; margin: 4px 0 12px; font-size: 14px; }
+.warn { background: var(--warn-bg); color: var(--warn-fg); border-radius: 16px; padding: 12px 14px; margin: 4px 0 14px; font-size: 14px; }
 .warn .btns { display: flex; gap: 8px; margin-top: 10px; }
-.chip { display: inline-block; font-size: 12px; padding: 1px 9px; border-radius: 99px; background: var(--chip); color: var(--muted); }
-.chip.ok { color: var(--income); }
-.chip.bad { color: var(--expense); }
+.chip { display: inline-block; font-size: 12px; padding: 1px 9px; border-radius: 99px; background: var(--surface-2); color: var(--muted); font-weight: 600; }
+.chip.ok { color: var(--income); background: var(--income-soft); }
+.chip.bad, .chip.over { color: var(--expense); background: color-mix(in srgb, var(--expense) 14%, transparent); }
+.chip.warn { color: var(--warn-text); background: var(--warn-bg); }
 
-/* tab bar */
-.tabbar { position: fixed; inset: auto 0 0 0; background: var(--surface); border-top: 1px solid var(--line); z-index: 20;
-  padding: 6px max(10px, env(safe-area-inset-right, 0px)) calc(6px + env(safe-area-inset-bottom, 0px)) max(10px, env(safe-area-inset-left, 0px)); }
-.tabbar > div { max-width: 560px; margin: 0 auto; display: grid; grid-template-columns: 1fr 76px 1fr 1fr; align-items: center; }
-.tab { background: none; border: 0; min-height: 52px; display: grid; justify-items: center; align-content: center; gap: 1px; font-size: 12px; color: var(--muted); cursor: pointer; }
+/* ---------- auth ---------- */
+.authbox { background: var(--surface); border-radius: 28px; padding: 26px 20px 22px; margin-top: 5vh; box-shadow: var(--shadow), 0 0 0 1px var(--line); }
+.authbox .logo { width: 64px; height: 64px; border-radius: 18px; margin-bottom: 14px; }
+.authbox h1 { font-size: 22px; margin: 0 0 4px; line-height: 1.5; }
+.authbox .sub { color: var(--muted); font-size: 13.5px; margin: 0 0 18px; }
+.authbox input[type="email"], .authbox input[type="password"] { direction: ltr; text-align: left; }
+.err { color: var(--expense); font-size: 13.5px; min-height: 24px; margin: 2px 0 8px; }
+.okmsg { color: var(--income); font-size: 13.5px; margin: 2px 0 10px; }
+.linkbtn { background: none; border: 0; color: var(--brand); padding: 8px 4px; cursor: pointer; font: inherit; font-size: 14px; font-weight: 500; }
+.row-links { display: flex; justify-content: space-between; flex-wrap: wrap; margin-top: 6px; }
+
+/* ---------- tab bar ---------- */
+.tabbar { position: fixed; inset: auto 0 0 0; background: color-mix(in srgb, var(--surface) 94%, transparent); -webkit-backdrop-filter: saturate(1.4) blur(14px); backdrop-filter: saturate(1.4) blur(14px); border-top: 1px solid var(--line); z-index: 20;
+  padding: 6px max(8px, env(safe-area-inset-right, 0px)) calc(8px + env(safe-area-inset-bottom, 0px)) max(8px, env(safe-area-inset-left, 0px)); }
+.tabbar > div { max-width: 560px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr 72px 1fr 1fr; align-items: center; }
+.tab { background: none; border: 0; min-height: 54px; display: grid; justify-items: center; align-content: center; gap: 2px; font-size: 11.5px; color: var(--muted); cursor: pointer; font-weight: 500; }
+.tab .ti { width: 54px; height: 30px; border-radius: 15px; display: grid; place-items: center; transition: background-color 180ms var(--ease-out), transform 140ms var(--ease-out); }
+.tab:active .ti { transform: scale(.92); }
 .tab svg { width: 22px; height: 22px; }
 .tab[aria-current="page"] { color: var(--brand); font-weight: 700; }
-.fab { width: 56px; height: 56px; margin: -22px auto 0; border-radius: 50%; border: 4px solid var(--surface); background: var(--gold); color: #3a2a00; display: grid; place-items: center; cursor: pointer; box-shadow: var(--shadow); }
+.tab[aria-current="page"] .ti { background: var(--brand-soft); }
+.fab { width: 58px; height: 58px; margin: -26px auto 0; border-radius: 50%; border: 4px solid var(--bg); background: linear-gradient(160deg, #f9cc52, var(--gold)); color: var(--gold-ink); display: grid; place-items: center; cursor: pointer; box-shadow: var(--shadow);
+  transition: transform 160ms var(--ease-out); }
+.fab:active { transform: scale(.93); }
 .fab svg { width: 26px; height: 26px; }
 
-/* sheet */
-.backdrop { position: fixed; inset: 0; background: rgba(0, 0, 0, .45); z-index: 30; }
-.sheet { position: fixed; inset: auto 0 0 0; z-index: 31; background: var(--surface); border-radius: 22px 22px 0 0; max-height: 92vh; overflow-y: auto; max-width: 560px; margin: 0 auto;
-  padding: 14px max(16px, env(safe-area-inset-right, 0px)) calc(18px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); box-shadow: var(--shadow); }
-.sheet-h { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-.sheet-h h2 { margin: 0; font-size: 17px; }
-.x { width: 40px; height: 40px; border-radius: 50%; border: 0; background: var(--chip); font-size: 22px; line-height: 1; cursor: pointer; }
-.toast { position: fixed; z-index: 40; inset: auto 0 calc(88px + env(safe-area-inset-bottom, 0px)) 0; display: flex; justify-content: center; pointer-events: none; padding: 0 16px; }
-.toast span { background: var(--fg); color: var(--bg); padding: 9px 16px; border-radius: 99px; font-size: 14px; }
+/* ---------- sheet & toast ---------- */
+.backdrop { position: fixed; inset: 0; background: rgba(6, 16, 14, .5); z-index: 30; }
+.sheet { position: fixed; inset: auto 0 0 0; z-index: 31; background: var(--surface); border-radius: 28px 28px 0 0; max-height: 92vh; max-height: 92dvh; overflow-y: auto; overscroll-behavior: contain; max-width: 560px; margin: 0 auto;
+  padding: 22px max(18px, env(safe-area-inset-right, 0px)) calc(20px + env(safe-area-inset-bottom, 0px)) max(18px, env(safe-area-inset-left, 0px)); box-shadow: var(--shadow); }
+.sheet::before { content: ""; position: absolute; top: 8px; left: 50%; width: 38px; height: 4px; margin-left: -19px; border-radius: 4px; background: var(--line); }
+.sheet-h { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+.sheet-h h2 { margin: 0; font-size: 18px; line-height: 1.5; }
+.x { width: 40px; height: 40px; border-radius: 50%; border: 0; background: var(--surface-2); font-size: 22px; line-height: 1; cursor: pointer; transition: transform 140ms var(--ease-out); }
+.x:active { transform: scale(.92); }
+.toast { position: fixed; z-index: 40; inset: calc(12px + env(safe-area-inset-top, 0px)) 0 auto 0; display: flex; justify-content: center; pointer-events: none; padding: 0 16px; }
+.toast span { background: var(--fg); color: var(--bg); padding: 10px 18px; border-radius: 99px; font-size: 14px; font-weight: 500; box-shadow: var(--shadow); max-width: 100%; text-align: center; }
 @media (prefers-reduced-motion: no-preference) {
-  .sheet { animation: up .18s ease-out; }
-  @keyframes up { from { transform: translateY(24px); opacity: .5; } to { transform: none; opacity: 1; } }
+  .backdrop { animation: fade 200ms var(--ease-out); }
+  .sheet { animation: up 320ms var(--ease-drawer); }
+  .toast span { animation: pop 220ms var(--ease-out); }
+  .bar > i { animation: grow 520ms var(--ease-out) backwards; }
+  .authbox { animation: rise 360ms var(--ease-out) backwards; }
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes up { from { transform: translateY(100%); } to { transform: none; } }
+  @keyframes pop { from { transform: translateY(-8px) scale(.96); opacity: 0; } to { transform: none; opacity: 1; } }
+  @keyframes grow { from { transform: scaleX(.02); } to { transform: none; } }
+  @keyframes rise { from { transform: translateY(8px); opacity: 0; } to { transform: none; opacity: 1; } }
+}
+@media (prefers-reduced-motion: reduce) {
+  .backdrop, .sheet { animation: fade 150ms linear; }
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
 }
 </style>
 </head>
@@ -162,6 +297,14 @@ textarea { resize: vertical; }
 <div id="sheetRoot" dir="rtl" lang="fa" hidden></div>
 <div id="toast" class="toast" dir="rtl" aria-live="polite"></div>
 
+<script id="config">
+/* ===== تنظیمات Supabase: فقط این دو مقدار را عوض کن =====
+   - SUPABASE_URL: آدرس پروژه، شبیه https://abcdxyz.supabase.co
+   - SUPABASE_KEY: کلید عمومی (Publishable key یا anon key).
+   هرگز کلید «secret» یا «service_role» را اینجا نگذار. */
+const SUPABASE_URL = "https://vhtbbrxjbphavwtnzqsl.supabase.co";
+const SUPABASE_KEY = "sb_publishable_eVJcW3FbpmF1lxH3K51rTQ_Z24ZWFG4";
+</script>
 <script>
 // <pure>
 const FA_DIGITS = "۰۱۲۳۴۵۶۷۸۹";
@@ -237,6 +380,41 @@ function parseAmountInput(text, allowNeg) {
   return Number.isSafeInteger(n) ? n : null;
 }
 
+const normText = (s) => normDigits(String(s ?? "")).replace(/ي/g, "ی").replace(/ك/g, "ک").toLowerCase();
+const normTag = (s) => String(s ?? "").replace(/^[#\s]+/, "").replace(/\s+/g, " ").trim().slice(0, 30);
+function parseTags(list) {
+  const out = [];
+  for (const x of list || []) { const t = normTag(x); if (t && !out.includes(t)) out.push(t); if (out.length >= 8) break; }
+  return out;
+}
+const splitTagText = (s) => String(s ?? "").split(/[,،\n]+/);
+const jMonthLen = (jy, jm) => (jm <= 6 ? 31 : jm <= 11 ? 30 : jToISO(jy, 12, 30) ? 30 : 29);
+const monthBounds = (jy, jm) => [jToISO(jy, jm, 1), jToISO(jy, jm, jMonthLen(jy, jm))];
+const daysBetween = (a, b) => Math.round((Date.UTC(...b.split("-").map((x, i) => (i === 1 ? x - 1 : +x))) - Date.UTC(...a.split("-").map((x, i) => (i === 1 ? x - 1 : +x)))) / 86400000);
+const EMPTY_FILTER = { q: "", type: "all", cat: "", tag: "", from: "", to: "" };
+const isFiltered = (f) => !!(f.q.trim() || f.type !== "all" || f.cat || f.tag || f.from || f.to);
+function filterTxs(txs, f) {
+  const q = normText(f.q).trim();
+  const qd = q.replace(/[,٬\s]/g, "");
+  return txs.filter((t) => {
+    if (f.type !== "all" && t.type !== f.type) return false;
+    if (f.cat === "__none") { if (t.category) return false; } else if (f.cat && t.category !== f.cat) return false;
+    if (f.tag && !t.tags.includes(f.tag)) return false;
+    if (f.from && t.date < f.from) return false;
+    if (f.to && t.date > f.to) return false;
+    if (q) {
+      const hay = normText([t.category, t.note, ...t.tags].join(" "));
+      if (!hay.includes(q) && !(/^\d+$/.test(qd) && String(t.amount).includes(qd))) return false;
+    }
+    return true;
+  });
+}
+function monthSpentByCat(txs, jy, jm) {
+  const [a, b] = monthBounds(jy, jm), m = new Map();
+  for (const t of txs) if (t.type === "expense" && t.date >= a && t.date <= b) m.set(t.category, (m.get(t.category) || 0) + t.amount);
+  return m;
+}
+
 /* --- پیامک بلو --- */
 const INCOME_WORDS = ["نشست", "واریز", "دریافت"];
 const EXPENSE_WORDS = ["پرید", "برداشت", "خرید", "پرداخت", "انتقال", "کسر"];
@@ -299,7 +477,7 @@ function csvToTx(rows) {
   const head = rows[0].map((h) => h.trim().toLowerCase());
   const hasHead = head.includes("date") || head.includes("amount");
   const idx = (name, fallback) => (hasHead ? head.indexOf(name) : fallback);
-  const iD = idx("date", 1), iA = idx("amount", 2), iT = idx("type", 3), iC = idx("category", 4), iN = idx("note", 5);
+  const iD = idx("date", 1), iA = idx("amount", 2), iT = idx("type", 3), iC = idx("category", 4), iN = idx("note", 5), iG = hasHead ? head.indexOf("tags") : 6;
   const items = []; let bad = 0;
   for (const r of hasHead ? rows.slice(1) : rows) {
     const date = parseDateInput(r[iD] ?? "");
@@ -307,7 +485,7 @@ function csvToTx(rows) {
     const tRaw = (r[iT] ?? "").trim().toLowerCase();
     const type = tRaw === "income" || tRaw === "درآمد" ? "income" : tRaw === "expense" || tRaw === "هزینه" ? "expense" : null;
     if (!date || !amount || !type) { bad++; continue; }
-    items.push({ date, amount, type, category: (r[iC] ?? "").trim(), note: (r[iN] ?? "").trim() });
+    items.push({ date, amount, type, category: (r[iC] ?? "").trim(), note: (r[iN] ?? "").trim(), tags: iG >= 0 ? parseTags(String(r[iG] ?? "").split("|")) : [] });
   }
   return { items, bad };
 }
@@ -315,7 +493,7 @@ function csvToTx(rows) {
 
 /* ============ وضعیت و ذخیره‌سازی ============ */
 const $ = (s, el = document) => el.querySelector(s);
-const state = { tab: "tx", txs: [], settings: { opening: 0, unit: "toman" }, loaded: false, slow: false, noDb: false, expanded: null, confirmDel: null, limit: 60 };
+const state = { tab: "tx", txs: [], settings: { opening: 0, unit: "toman" }, mode: "boot", authTab: "login", authInfo: "", legacy: null, legacyDismissed: false, loaded: false, slow: false, noDb: false, expanded: null, confirmDel: null, limit: 60, budgets: {}, goals: [], filter: { ...EMPTY_FILTER }, noPlan: false, schemaOld: false };
 let ref = null;
 let importing = false;
 
@@ -336,11 +514,31 @@ function toast(msg) {
   const el = $("#toast");
   el.innerHTML = `<span>${esc(msg)}</span>`;
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => { el.innerHTML = ""; }, 2600);
+  toastTimer = setTimeout(() => { el.innerHTML = ""; }, 6500);
+}
+
+function dbErrorMessage(err, fallback = "ذخیره‌سازی انجام نشد") {
+  console.error("[Finance app / Supabase]", err);
+  const code = String(err?.code || "");
+  const raw = String(err?.message || err?.details || err?.hint || "");
+  if (code === "42501" || /row-level security|permission denied/i.test(raw))
+    return "دسترسی دیتابیس رد شد (RLS/مجوزها). فایل supabase_setup.sql را در SQL Editor اجرا کن.";
+  if (code === "23503") return "کاربر یا ارتباط حساب کاربری در دیتابیس معتبر نیست؛ یک‌بار خارج و دوباره وارد شو.";
+  if (code === "23514" || code === "22P02" || code === "22003")
+    return "مقدار واردشده با محدودیت دیتابیس سازگار نیست؛ مبلغ و نوع اطلاعات را بررسی کن.";
+  if (code === "42P01" || code === "PGRST205")
+    return "جدول موردنیاز در دیتابیس پیدا نشد؛ فایل supabase_setup.sql را اجرا کن.";
+  if (code === "42703" || code === "PGRST204")
+    return "ستون‌های دیتابیس قدیمی هستند؛ نسخه جدید supabase_setup.sql را اجرا کن.";
+  if (/fetch|network|failed to fetch/i.test(raw))
+    return "ارتباط با Supabase برقرار نشد؛ اینترنت، آدرس پروژه و وضعیت پروژه را بررسی کن.";
+  const detail = raw ? `: ${raw}` : "";
+  return `${fallback}${detail}`;
 }
 
 async function saveSettings(patch) {
   const next = { ...state.settings, ...patch };
+  if (!ref) throw new Error("اتصال دیتابیس آماده نیست");
   await ref.doc("settings").set({ opening: next.opening, unit: next.unit });
 }
 
@@ -349,12 +547,17 @@ const ICONS = {
   tx: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/></svg>',
   rep: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 20V10M12 20V4M19 20v-7"/></svg>',
   more: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg>',
+  plan: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r=".6" fill="currentColor"/></svg>',
+  search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>',
+  filter: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"/></svg>',
+  down: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg>',
+  up: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg>',
   plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>',
 };
 
 function renderTabs() {
-  const tab = (id, label) => `<button class="tab" data-tab="${id}" ${state.tab === id ? 'aria-current="page"' : ""}>${ICONS[id]}<span>${label}</span></button>`;
-  $("#tabs").innerHTML = tab("tx", "تراکنش‌ها") + `<button class="fab" data-act="add" aria-label="ثبت تراکنش جدید">${ICONS.plus}</button>` + tab("rep", "گزارش‌ها") + tab("more", "بیشتر");
+  const tab = (id, label) => `<button class="tab" data-tab="${id}" ${state.tab === id ? 'aria-current="page"' : ""}><span class="ti">${ICONS[id]}</span><span>${label}</span></button>`;
+  $("#tabs").innerHTML = tab("tx", "تراکنش‌ها") + tab("plan", "برنامه") + `<button class="fab" data-act="add" aria-label="ثبت تراکنش جدید">${ICONS.plus}</button>` + tab("rep", "گزارش‌ها") + tab("more", "بیشتر");
 }
 
 function renderHero() {
@@ -366,17 +569,44 @@ function renderHero() {
       <div class="label">موجودی حساب</div>
       <div class="bal ${bal < 0 ? "neg" : ""}">${ready ? num(bal) : "…"}<span class="unit">${unitLabel()}</span></div>
       <div class="stats">
-        <div class="stat"><div class="k">جمع درآمد</div><div class="v">${ready ? num(inc) : "…"}</div></div>
-        <div class="stat"><div class="k">جمع هزینه</div><div class="v">${ready ? num(exp) : "…"}</div></div>
+        <div class="stat"><div class="k"><i>${ICONS.down}</i>جمع درآمد</div><div class="v">${ready ? num(inc) : "…"}</div></div>
+        <div class="stat"><div class="k"><i>${ICONS.up}</i>جمع هزینه</div><div class="v">${ready ? num(exp) : "…"}</div></div>
       </div>
     </section>`;
 }
 
-function viewTx() {
-  if (!state.loaded) return `<div class="empty"><b>در حال بارگذاری…</b>داده‌ها را از ذخیره‌سازی می‌خوانم.</div>` +
-    (state.slow ? `<div class="notice">اتصال به ذخیره‌سازی کند است. اینترنت را بررسی کن؛ داده‌ها بعد از اتصال نمایش داده می‌شوند.</div>` : "");
-  if (!state.txs.length) return `<div class="empty" style="margin-top:20px"><b>هنوز تراکنشی ثبت نشده</b>با دکمه‌ی + شروع کن، یا از «بیشتر» پیامک‌های بلو یا فایل CSV برنامه‌ی کامپیوتری را وارد کن.</div>`;
-  const shown = state.txs.slice(0, state.limit);
+function txRowHTML(t) {
+  const open = state.expanded === t.id;
+  const tags = t.tags.length ? `<div class="tags">${t.tags.map((x) => `<span class="tag">#${esc(x)}</span>`).join("")}</div>` : "";
+  const name = t.category || (t.type === "income" ? "درآمد" : "هزینه");
+  let html = `<div class="item"><button class="row" data-row="${esc(t.id)}" aria-expanded="${open}">
+      <span class="ava ${t.type === "income" ? "inc" : ""}" style="${t.type === "income" ? "" : `--h:${hueOf(t.category)}`}" aria-hidden="true">${t.type === "income" ? ICONS.down : t.category ? esc([...t.category][0]) : ICONS.up}</span>
+      <div class="rb"><div class="t">${esc(name)}</div>${t.note ? `<div class="s">${esc(t.note)}</div>` : ""}${tags}</div>
+      <div class="amt ${t.type === "income" ? "inc" : "exp"}">${snum(t.type === "income" ? "+" : "−", t.amount)}</div></button>`;
+  if (open) {
+    html += state.confirmDel === t.id
+      ? `<div class="acts"><div class="msg">این تراکنش حذف شود؟</div><button class="btn danger sm" data-del-yes="${esc(t.id)}">بله، حذف کن</button><button class="btn ghost sm" data-del-no>نه</button></div>`
+      : `<div class="acts"><button class="btn ghost sm" data-edit="${esc(t.id)}">ویرایش</button><button class="btn ghost sm" data-del="${esc(t.id)}">حذف</button></div>`;
+  }
+  return html + "</div>";
+}
+function hueOf(s) { let h = 0; for (const c of String(s || "x")) h = (h * 31 + c.codePointAt(0)) % 360; return h; }
+
+function txListHTML() {
+  const f = state.filter, filtered = isFiltered(f);
+  const list = filtered ? filterTxs(state.txs, f) : state.txs;
+  let head = "";
+  if (filtered) {
+    let inc = 0, exp = 0;
+    for (const t of list) { if (t.type === "income") inc += t.amount; else exp += t.amount; }
+    head = `<div class="fsum" role="status"><b>${toFa(list.length)} تراکنش</b><span>درآمد ${num(inc)}</span><span>هزینه ${num(exp)}</span></div>`;
+  }
+  if (!list.length) {
+    return head + (filtered
+      ? `<div class="empty"><b>نتیجه‌ای پیدا نشد</b>جستجو یا فیلتر را تغییر بده.<div style="margin-top:12px"><button class="btn ghost sm" data-act="clear-filter">پاک کردن فیلترها</button></div></div>`
+      : `<div class="empty" style="margin-top:20px"><b>هنوز تراکنشی ثبت نشده</b>با دکمه‌ی + شروع کن، یا از «بیشتر» پیامک‌های بلو یا فایل CSV را وارد کن.</div>`);
+  }
+  const shown = list.slice(0, state.limit);
   let html = "", last = "";
   for (const t of shown) {
     if (t.date !== last) {
@@ -384,27 +614,42 @@ function viewTx() {
       html += `<div class="sec-h">${esc(longJ(t.date))}</div><div class="list">`;
       last = t.date;
     }
-    const open = state.expanded === t.id;
-    html += `<div class="item"><button class="row" data-row="${esc(t.id)}" aria-expanded="${open}">
-        <div><div class="t">${esc(t.category || (t.type === "income" ? "درآمد" : "هزینه"))}</div>${t.note ? `<div class="s">${esc(t.note)}</div>` : ""}</div>
-        <div class="amt ${t.type === "income" ? "inc" : "exp"}">${snum(t.type === "income" ? "+" : "−", t.amount)}</div></button>`;
-    if (open) {
-      html += state.confirmDel === t.id
-        ? `<div class="acts"><div class="msg">این تراکنش حذف شود؟</div><button class="btn danger sm" data-del-yes="${esc(t.id)}">بله، حذف کن</button><button class="btn ghost sm" data-del-no>نه</button></div>`
-        : `<div class="acts"><button class="btn ghost sm" data-del="${esc(t.id)}">حذف</button></div>`;
-    }
-    html += "</div>";
+    html += txRowHTML(t);
   }
   if (last) html += "</div>";
-  if (state.txs.length > state.limit) html += `<div style="margin-top:14px"><button class="btn ghost block" data-act="more-rows">نمایش بیشتر (${toFa(state.txs.length - state.limit)} مورد دیگر)</button></div>`;
-  return html;
+  if (list.length > state.limit) html += `<div style="margin-top:14px"><button class="btn ghost block" data-act="more-rows">نمایش بیشتر (${toFa(list.length - state.limit)} مورد دیگر)</button></div>`;
+  return head + html;
+}
+
+function filterChips() {
+  const f = state.filter, c = [];
+  if (f.type !== "all") c.push(["type", f.type === "income" ? "فقط درآمد" : "فقط هزینه"]);
+  if (f.cat) c.push(["cat", f.cat === "__none" ? "بدون دسته" : f.cat]);
+  if (f.tag) c.push(["tag", "#" + f.tag]);
+  if (f.from || f.to) c.push(["date", `${f.from ? toFa(showJ(f.from)) : "…"} تا ${f.to ? toFa(showJ(f.to)) : "…"}`]);
+  return c.length ? `<div class="fchips">${c.map(([k, l]) => `<button class="fchip" data-clr="${k}" aria-label="حذف فیلتر ${esc(l)}">${esc(l)} <span aria-hidden="true">×</span></button>`).join("")}</div>` : "";
+}
+function filterCount() {
+  const f = state.filter; return (f.type !== "all") + !!f.cat + !!f.tag + !!(f.from || f.to);
+}
+
+function viewTx() {
+  if (!state.loaded) return `<div class="empty"><b>در حال بارگذاری…</b>داده‌ها را از ذخیره‌سازی می‌خوانم.</div>` +
+    (state.slow ? `<div class="notice">اتصال به ذخیره‌سازی کند است. اینترنت را بررسی کن؛ داده‌ها بعد از اتصال نمایش داده می‌شوند.</div>` : "");
+  const n = filterCount();
+  const tools = state.txs.length ? `<div class="toolbar"><label class="search">${ICONS.search}<input id="fQ" type="search" enterkeyhint="search" autocomplete="off" placeholder="جستجو در تراکنش‌ها" value="${esc(state.filter.q)}" aria-label="جستجو"></label>
+      <button class="fbtn" data-act="filter" aria-label="فیلتر">${ICONS.filter}${n ? `<i class="dot">${toFa(n)}</i>` : ""}</button></div>${filterChips()}` : "";
+  return tools + `<div id="txList">${txListHTML()}</div>`;
 }
 
 function viewReport() {
   if (!state.loaded) return viewTx();
-  const cats = new Map(), months = new Map();
+  const cats = new Map(), months = new Map(), tagsM = new Map();
   for (const t of state.txs) {
-    if (t.type === "expense") cats.set(t.category || "بدون دسته", (cats.get(t.category || "بدون دسته") || 0) + t.amount);
+    if (t.type === "expense") {
+      cats.set(t.category || "بدون دسته", (cats.get(t.category || "بدون دسته") || 0) + t.amount);
+      for (const g of t.tags) tagsM.set(g, (tagsM.get(g) || 0) + t.amount);
+    }
     const [y, m] = isoToJ(t.date);
     const k = `${y}-${pad2(m)}`;
     const o = months.get(k) || { inc: 0, exp: 0 };
@@ -412,30 +657,78 @@ function viewReport() {
     months.set(k, o);
   }
   if (!state.txs.length) return `<div class="empty" style="margin-top:20px"><b>گزارشی نیست</b>بعد از ثبت چند تراکنش اینجا پر می‌شود.</div>`;
-  const sorted = [...cats.entries()].sort((a, b) => b[1] - a[1]);
-  const total = sorted.reduce((s, [, v]) => s + v, 0);
-  const top = sorted.length ? sorted[0][1] : 1;
-  const bars = sorted.length ? sorted.map(([c, v]) => `<div class="bar-row"><div class="bar-top"><span>${esc(c)}</span><span>${num(v)} <span class="chip">${toFa(Math.round((v / total) * 100))}٪</span></span></div><div class="bar"><i style="width:${Math.max(2, (v / top) * 100)}%"></i></div></div>`).join("") : `<div class="bar-row" style="color:var(--muted)">هزینه‌ای ثبت نشده.</div>`;
+  const barsOf = (map, label) => {
+    const sorted = [...map.entries()].sort((a, b) => b[1] - a[1]);
+    const total = sorted.reduce((s, [, v]) => s + v, 0), top = sorted.length ? sorted[0][1] : 1;
+    return sorted.length ? sorted.map(([c, v]) => `<div class="bar-row"><div class="bar-top"><span>${label(c)}</span><span>${num(v)} <span class="chip">${toFa(Math.round((v / total) * 100))}٪</span></span></div><div class="bar"><i style="width:${Math.max(2, (v / top) * 100)}%"></i></div></div>`).join("") : `<div class="bar-row" style="color:var(--muted)">هزینه‌ای ثبت نشده.</div>`;
+  };
   const rows = [...months.entries()].sort((a, b) => (a[0] < b[0] ? 1 : -1)).map(([k, o]) => {
     const [y, m] = k.split("-").map(Number);
     return `<tr><td>${MONTHS[m - 1]} ${toFa(y)}</td><td>${num(o.inc)}</td><td>${num(o.exp)}</td><td>${num(o.inc - o.exp)}</td></tr>`;
   }).join("");
-  return `<div class="sec-h">هزینه به تفکیک دسته</div><div class="list">${bars}</div>
+  return `<div class="sec-h">هزینه به تفکیک دسته</div><div class="list">${barsOf(cats, esc)}</div>
+    ${tagsM.size ? `<div class="sec-h">هزینه به تفکیک برچسب</div><div class="list">${barsOf(tagsM, (g) => "#" + esc(g))}</div>` : ""}
     <div class="sec-h">گزارش ماهانه</div><div class="list tbl-wrap"><table><thead><tr><th>ماه</th><th>درآمد</th><th>هزینه</th><th>مانده</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+
+/* ---------- برنامه‌ریزی: بودجه و هدف ---------- */
+const curJ = () => isoToJ(todayISO());
+function budgetClass(spent, limit) { const r = spent / limit; return r > 1 ? "over" : r >= 0.8 ? "warn" : "ok"; }
+function viewPlan() {
+  if (!state.loaded) return viewTx();
+  if (state.noPlan) return `<div class="notice" style="margin-top:0"><b>بخش برنامه‌ریزی هنوز فعال نشده.</b><br>فایل <span class="num">supabase_setup.sql</span> نسخه‌ی جدید را یک بار در SQL Editor اجرا کن، بعد صفحه را رفرش کن.</div>`;
+  const [jy, jm] = curJ(), spent = monthSpentByCat(state.txs, jy, jm);
+  const cats = Object.keys(state.budgets).sort((a, b) => (spent.get(b) || 0) / state.budgets[b] - (spent.get(a) || 0) / state.budgets[a]);
+  let tl = 0, ts = 0;
+  for (const c of cats) { tl += state.budgets[c]; ts += spent.get(c) || 0; }
+  const daysLeft = jMonthLen(jy, jm) - curJ()[2] + 1;
+  const left = tl - ts;
+  const sum = cats.length ? `<div class="plan-sum"><div><div class="k">باقی‌مانده‌ی بودجه</div><div class="v ${left < 0 ? "neg" : ""}">${snum(left < 0 ? "−" : "", Math.abs(left))} <small>${unitLabel()}</small></div></div>
+      <div class="meta"><span>${toFa(daysLeft)} روز تا آخر ماه</span>${left > 0 ? `<span>روزی ${num(Math.floor(left / daysLeft))}</span>` : `<span>از سقف گذشته‌ای</span>`}</div>
+      <div class="bar tall"><i class="${budgetClass(ts, tl || 1)}" style="width:${Math.min(100, tl ? (ts / tl) * 100 : 0)}%"></i></div></div>` : "";
+  const brows = cats.map((c) => {
+    const lim = state.budgets[c], sp = spent.get(c) || 0, cls = budgetClass(sp, lim), pct = Math.round((sp / lim) * 100);
+    return `<button class="brow" data-budget="${esc(c)}"><div class="bar-top"><span class="bn">${esc(c)}</span><span class="chip ${cls}">${toFa(pct)}٪</span></div>
+      <div class="bar"><i class="${cls}" style="width:${Math.min(100, (sp / lim) * 100)}%"></i></div>
+      <div class="bsub"><span>${num(sp)} از ${num(lim)}</span><span class="${cls}">${sp > lim ? `${num(sp - lim)} بیشتر` : `${num(lim - sp)} مانده`}</span></div></button>`;
+  }).join("");
+  const budgets = `<div class="sec-row"><div class="sec-h">بودجه‌ی ${MONTHS[jm - 1]} ${toFa(jy)}</div><button class="linkbtn" data-act="budget-new">+ بودجه‌ی جدید</button></div>` + sum +
+    (cats.length ? `<div class="list">${brows}</div><p class="hint">بودجه برای هر ماه تکرار می‌شود و فقط هزینه‌های همان ماه شمسی را می‌شمارد.</p>`
+      : `<div class="empty"><b>هنوز بودجه‌ای نداری</b>برای هر دسته‌ی هزینه (مثلاً خوراک) سقف ماهانه بگذار تا بدانی چقدر مانده.<div style="margin-top:12px"><button class="btn primary sm" data-act="budget-new">ساخت اولین بودجه</button></div></div>`);
+  const today = todayISO();
+  const grows = state.goals.map((g) => {
+    const pct = Math.min(100, Math.round((g.saved / g.target) * 100)), done = g.saved >= g.target;
+    let dl = "";
+    if (g.deadline) {
+      const d = daysBetween(today, g.deadline), rem = g.target - g.saved;
+      dl = done ? "" : d < 0 ? `<span class="over">${toFa(-d)} روز از موعد گذشته</span>` : `<span>${toFa(d)} روز مانده${rem > 0 ? ` · ماهی ${num(Math.ceil(rem / Math.max(1, d / 30)))}` : ""}</span>`;
+    }
+    return `<button class="brow goal" data-goal="${esc(g.id)}"><div class="bar-top"><span class="bn">${esc(g.title)}</span><span class="chip ${done ? "ok" : ""}">${done ? "رسیدی ✓" : toFa(pct) + "٪"}</span></div>
+      <div class="bar"><i class="${done ? "ok" : "goalbar"}" style="width:${pct}%"></i></div>
+      <div class="bsub"><span>${num(g.saved)} از ${num(g.target)}</span>${dl || "<span></span>"}</div></button>`;
+  }).join("");
+  const goals = `<div class="sec-row"><div class="sec-h">اهداف پس‌انداز</div><button class="linkbtn" data-act="goal-new">+ هدف جدید</button></div>` +
+    (state.goals.length ? `<div class="list">${grows}</div><p class="hint">مبلغ هدف از موجودی حساب کم نمی‌شود؛ فقط برای پیگیری پس‌انداز است.</p>`
+      : `<div class="empty"><b>هنوز هدفی نداری</b>مثلاً «سفر» یا «صندوق اضطراری» با مبلغ و تاریخ مقصد، و واریزهایت را ثبت کن.<div style="margin-top:12px"><button class="btn primary sm" data-act="goal-new">ساخت اولین هدف</button></div></div>`);
+  return budgets + goals;
 }
 
 function viewMore() {
   const r = state.settings.unit === "rial";
+  const inst = isStandalone() ? "" : `<button data-act="install"><span>نصب روی صفحه‌ی اصلی گوشی<small>مثل یک برنامه‌ی جدا، با آیکون و تمام‌صفحه</small></span><span aria-hidden="true">‹</span></button>`;
   return `<div class="sec-h">ابزارها</div>
     <div class="list menu">
+      ${inst}
       <button data-act="sms"><span>وارد کردن از پیامک بلو<small>پیامک‌ها را پیست کن، بررسی کن و ثبت کن</small></span><span aria-hidden="true">‹</span></button>
       <button data-act="balance"><span>تنظیم موجودی<small>موجودی واقعی حسابت را بنویس تا با برنامه یکی شود</small></span><span aria-hidden="true">‹</span></button>
-      <button data-act="csv-in"><span>وارد کردن فایل CSV<small>مثلاً خروجی برنامه‌ی کامپیوتری</small></span><span aria-hidden="true">‹</span></button>
+      <button data-act="csv-in"><span>وارد کردن فایل CSV<small>مثلاً خروجی برنامه‌ی کامپیوتری یا پشتیبان قبلی</small></span><span aria-hidden="true">‹</span></button>
       <button data-act="csv-out"><span>گرفتن پشتیبان (CSV)<small>${esc(backupLine())}</small></span><span aria-hidden="true">‹</span></button>
     </div>
     <div class="sec-h">واحد پول</div>
     <div class="seg" role="group" aria-label="واحد پول"><button data-unit="toman" class="${r ? "" : "on"}">تومان</button><button data-unit="rial" class="${r ? "on" : ""}">ریال</button></div>
-    <p class="hint">واحد فقط برچسب نمایش و مبنای تبدیل پیامک‌هاست و مبلغ‌های ثبت‌شده را تغییر نمی‌دهد. داده‌ها فقط در همین مرورگر و روی همین دستگاه ذخیره می‌شوند و با پاک‌کردن اطلاعات مرورگر از بین می‌روند؛ پس هر از گاهی پشتیبان (CSV) بگیر.</p>`;
+    <p class="hint">واحد فقط برچسب نمایش و مبنای تبدیل پیامک‌هاست و مبلغ‌های ثبت‌شده را تغییر نمی‌دهد. داده‌ها در حساب خودت روی سرور ذخیره می‌شوند و فقط با ایمیل و رمز خودت قابل دیدن هستند. باز هم گاهی پشتیبان (CSV) بگیر.</p>
+    <div class="sec-h">حساب</div>
+    <div class="list menu"><button data-act="logout"><span>خروج از حساب<small class="num">${esc(session?.user?.email || "")}</small></span><span aria-hidden="true">‹</span></button></div>`;
 }
 
 function renderView() {
@@ -444,10 +737,49 @@ function renderView() {
     v.innerHTML = `<div class="notice" style="margin-top:0"><b>ذخیره‌سازی در دسترس نیست.</b></div>`;
     return;
   }
+  const keep = document.activeElement && document.activeElement.id === "fQ" ? { s: document.activeElement.selectionStart, e: document.activeElement.selectionEnd } : null;
   const warn = state.noPersist ? `<div class="notice" style="margin:0 0 14px"><b>مرورگر اجازه‌ی ذخیره نمی‌دهد.</b><br>داده‌ها فقط تا بستن این صفحه می‌مانند. صفحه را در حالت عادی (نه خصوصی) و از یک مرورگر معمولی باز کن، و حتماً پشتیبان بگیر.</div>` : "";
-  v.innerHTML = warn + (state.tab === "rep" ? viewReport() : state.tab === "more" ? viewMore() : viewTx());
+  const old = state.schemaOld && state.tab === "tx" ? `<div class="notice" style="margin:0 0 14px"><b>برچسب‌ها هنوز فعال نیستند.</b><br>فایل <span class="num">supabase_setup.sql</span> نسخه‌ی جدید را یک بار در SQL Editor اجرا کن، بعد صفحه را رفرش کن.</div>` : "";
+  const lg = state.legacy && !state.legacyDismissed && state.tab === "tx" && state.loaded
+    ? `<div class="notice" style="margin:0 0 14px"><b>داده‌های قبلی این دستگاه پیدا شد (${toFa(state.legacy.items.length)} تراکنش).</b><br>می‌خوای به حسابت منتقل بشن؟<div class="acts" style="padding:10px 0 0"><button class="btn primary sm" data-act="migrate">انتقال به حساب</button><button class="btn ghost sm" data-act="migrate-skip">بعداً</button></div></div>` : "";
+  v.innerHTML = lg + old + warn + (state.tab === "rep" ? viewReport() : state.tab === "more" ? viewMore() : state.tab === "plan" ? viewPlan() : viewTx());
+  if (keep) { const i = $("#fQ"); if (i) { i.focus(); try { i.setSelectionRange(keep.s, keep.e); } catch (e) { /* ignore */ } } }
 }
-function render() { renderTabs(); renderHero(); renderView(); }
+
+function render() {
+  if (state.mode !== "app") { renderGate(); return; }
+  $(".tabbar").hidden = false;
+  renderTabs(); renderHero(); renderView();
+}
+
+/* ---------- صفحه‌ی ورود و ثبت‌نام ---------- */
+function renderGate() {
+  $("#tabs").innerHTML = ""; $(".tabbar").hidden = true; $("#hero").innerHTML = "";
+  const box = (inner) => `<div class="authbox"><img class="logo" src="icon-192.png" alt="" width="64" height="64">${inner}</div>`;
+  const v = $("#view");
+  if (state.mode === "setup") {
+    v.innerHTML = box(`<h1>راه‌اندازی لازم است</h1><p class="sub">آدرس و کلید پروژه‌ی Supabase هنوز در ابتدای فایل <span class="num">index.html</span> نوشته نشده است. راهنمای نصب همراه فایل‌ها هست.</p>`);
+  } else if (state.mode === "boot") {
+    v.innerHTML = box(`<h1>درآمد و هزینه</h1><p class="sub">در حال آماده‌سازی…</p>`);
+  } else if (state.mode === "nolib") {
+    v.innerHTML = box(`<h1>اتصال برقرار نشد</h1><p class="sub">بخشی از برنامه (کتابخانه‌ی ورود) بارگذاری نشد. اینترنت یا فیلترشکن را بررسی کن و دوباره امتحان کن.</p><button class="btn primary block" data-auth="retry">تلاش دوباره</button>`);
+  } else if (state.mode === "recovery") {
+    v.innerHTML = box(`<h1>رمز جدید</h1><p class="sub">یک رمز جدید برای حسابت انتخاب کن.</p>
+      <form id="authForm" data-kind="recovery"><div class="field"><label for="aPw">رمز جدید (حداقل ۸ نویسه)</label><input id="aPw" type="password" autocomplete="new-password"></div>
+      <div class="err" id="aMsg" role="alert"></div><button class="btn primary block" id="aGo" type="submit">ذخیره‌ی رمز</button></form>`);
+  } else {
+    const login = state.authTab === "login";
+    v.innerHTML = box(`<h1>${login ? "ورود" : "ساخت حساب"}</h1>
+      <p class="sub">${login ? "با ایمیل و رمزت وارد شو تا تراکنش‌هایت از هر دستگاه در دسترس باشند." : "یک حساب بساز تا تراکنش‌هایت امن ذخیره شوند و از هر دستگاه در دسترس باشند."}</p>
+      <form id="authForm" data-kind="${login ? "login" : "signup"}">
+        <div class="field"><label for="aEmail">ایمیل</label><input id="aEmail" type="email" inputmode="email" autocomplete="email" required></div>
+        <div class="field"><label for="aPw">رمز${login ? "" : " (حداقل ۸ نویسه)"}</label><input id="aPw" type="password" autocomplete="${login ? "current-password" : "new-password"}" required></div>
+        <div class="err" id="aMsg" role="alert">${esc(state.authInfo)}</div>
+        <button class="btn primary block" id="aGo" type="submit">${login ? "ورود" : "ساخت حساب"}</button>
+      </form>
+      <div class="row-links"><button class="linkbtn" data-auth="${login ? "signup" : "login"}">${login ? "حساب ندارم، می‌خوام بسازم" : "حساب دارم، وارد می‌شوم"}</button>${login ? '<button class="linkbtn" data-auth="forgot">رمزم را فراموش کرده‌ام</button>' : ""}</div>`);
+  }
+}
 
 /* ============ برگه‌ها (Sheet) ============ */
 function openSheet(title, body, onMount) {
@@ -474,33 +806,77 @@ function liveFormat(el, allowNeg) {
   try { el.setSelectionRange(pos, pos); } catch (e) { /* ignore */ }
 }
 
-function openAdd() {
-  const cats = [...new Set(state.txs.map((t) => t.category).filter(Boolean))];
-  let type = "expense";
-  openSheet("ثبت تراکنش", `
-    <div class="seg" role="group" aria-label="نوع تراکنش"><button type="button" class="on" data-type="expense">هزینه</button><button type="button" data-type="income">درآمد</button></div>
-    <div class="field"><label for="fAmount">مبلغ (${unitLabel()})</label><input id="fAmount" inputmode="numeric" autocomplete="off" placeholder="۰"></div>
+const fmtInput = (n) => toFa(Number(n).toLocaleString("en-US").replace(/,/g, "٬"));
+const cleanTagsIn = (arr) => parseTags(arr);
+const allCats = (expOnly) => [...new Set(state.txs.filter((t) => !expOnly || t.type === "expense").map((t) => t.category).filter(Boolean))];
+function tagCounts() {
+  const m = new Map();
+  for (const t of state.txs) for (const g of t.tags) m.set(g, (m.get(g) || 0) + 1);
+  return [...m.entries()].sort((a, b) => b[1] - a[1]).map(([g]) => g);
+}
+
+/* گزارش بودجه بعد از ثبت یک هزینه */
+function budgetNote(cat, iso) {
+  const lim = state.budgets[cat];
+  if (!lim || !cat) return "";
+  const [jy, jm] = curJ(), [a, b] = monthBounds(jy, jm);
+  if (iso < a || iso > b) return "";
+  const sp = monthSpentByCat(state.txs, jy, jm).get(cat) || 0;
+  if (sp > lim) return `بودجه‌ی «${cat}» از سقف گذشت`;
+  if (sp / lim >= 0.8) return `${toFa(Math.round((sp / lim) * 100))}٪ بودجه‌ی «${cat}» مصرف شد`;
+  return "";
+}
+
+function openTxForm(existing) {
+  const edit = !!existing;
+  const cats = allCats(false);
+  let type = edit ? existing.type : "expense";
+  let tags = edit ? [...existing.tags] : [];
+  openSheet(edit ? "ویرایش تراکنش" : "ثبت تراکنش", `
+    <div class="seg" role="group" aria-label="نوع تراکنش"><button type="button" class="${type === "expense" ? "on" : ""}" data-type="expense">هزینه</button><button type="button" class="${type === "income" ? "on" : ""}" data-type="income">درآمد</button></div>
+    <div class="field"><label for="fAmount">مبلغ (${unitLabel()})</label><input id="fAmount" inputmode="numeric" autocomplete="off" placeholder="۰" value="${edit ? fmtInput(existing.amount) : ""}"></div>
     <div class="two">
-      <div class="field"><label for="fDate">تاریخ شمسی</label><input id="fDate" inputmode="numeric" autocomplete="off" value="${esc(toFa(showJ(todayISO())))}"></div>
-      <div class="field"><label for="fCat">دسته</label><input id="fCat" list="catList" autocomplete="off" placeholder="مثلاً خوراک"><datalist id="catList">${cats.map((c) => `<option value="${esc(c)}">`).join("")}</datalist></div>
+      <div class="field"><label for="fDate">تاریخ شمسی</label><input id="fDate" inputmode="numeric" autocomplete="off" value="${esc(toFa(showJ(edit ? existing.date : todayISO())))}"></div>
+      <div class="field"><label for="fCat">دسته</label><input id="fCat" list="catList" autocomplete="off" placeholder="مثلاً خوراک" value="${edit ? esc(existing.category) : ""}"><datalist id="catList">${cats.map((c) => `<option value="${esc(c)}">`).join("")}</datalist></div>
     </div>
-    <div class="field"><label for="fNote">توضیح (اختیاری)</label><input id="fNote" autocomplete="off"></div>
+    <div class="field"><label for="fNote">توضیح (اختیاری)</label><input id="fNote" autocomplete="off" value="${edit ? esc(existing.note) : ""}"></div>
+    <div class="field"><label for="fTagIn">برچسب‌ها (اختیاری)</label>
+      <div class="taginput" id="fTags"><span id="fTagChips"></span><input id="fTagIn" autocomplete="off" enterkeyhint="done" placeholder="برچسب جدید…"></div>
+      <div class="tagsug" id="fTagSug"></div></div>
     <div id="fWarn" class="warn" role="alert" hidden></div>
-    <button class="btn primary block" id="fSave">ثبت</button>`, (root) => {
-    const amount = $("#fAmount", root), warn = $("#fWarn", root);
+    <button class="btn primary block" id="fSave">${edit ? "ذخیره‌ی تغییرات" : "ثبت"}</button>`, (root) => {
+    const amount = $("#fAmount", root), warn = $("#fWarn", root), tin = $("#fTagIn", root);
+    const drawTags = () => {
+      $("#fTagChips", root).innerHTML = tags.map((g, i) => `<button type="button" class="tag on" data-tagrm="${i}" aria-label="حذف برچسب ${esc(g)}">#${esc(g)} <span aria-hidden="true">×</span></button>`).join("");
+      const sug = tagCounts().filter((g) => !tags.includes(g)).slice(0, 8);
+      $("#fTagSug", root).innerHTML = sug.map((g) => `<button type="button" class="tag" data-tagadd="${esc(g)}">#${esc(g)}</button>`).join("");
+    };
+    const commitTags = () => { const add = splitTagText(tin.value); tin.value = ""; tags = cleanTagsIn([...tags, ...add]); drawTags(); };
+    drawTags();
+    tin.addEventListener("input", () => { if (/[,،]/.test(tin.value)) commitTags(); });
+    tin.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); commitTags(); } else if (e.key === "Backspace" && !tin.value && tags.length) { tags.pop(); drawTags(); } });
+    tin.addEventListener("blur", () => { if (tin.value.trim()) commitTags(); });
+    root.addEventListener("click", (e) => {
+      const rm = e.target.closest("[data-tagrm]"), ad = e.target.closest("[data-tagadd]");
+      if (rm) { tags.splice(+rm.dataset.tagrm, 1); drawTags(); }
+      if (ad) { tags = cleanTagsIn([...tags, ad.dataset.tagadd]); drawTags(); }
+    });
     amount.addEventListener("input", () => { liveFormat(amount, false); warn.hidden = true; });
     root.querySelectorAll("[data-type]").forEach((b) => b.addEventListener("click", () => {
       type = b.dataset.type; warn.hidden = true;
       root.querySelectorAll("[data-type]").forEach((x) => x.classList.toggle("on", x === b));
     }));
     const save = async (force) => {
+      if (tin.value.trim()) commitTags();
       const amt = parseAmountInput(amount.value, false);
       const iso = parseDateInput($("#fDate", root).value);
       if (!amt || amt <= 0) { toast("مبلغ را درست وارد کن"); amount.focus(); return; }
       if (!iso) { toast("تاریخ را مثل ۱۴۰۵/۰۸/۱۹ وارد کن"); return; }
       if (type === "expense" && !force) {
-        const after = totals().bal - amt;
-        if (after < 0) {
+        const cur = totals().bal;
+        const before = edit ? (existing.type === "income" ? existing.amount : -existing.amount) : 0; // اثر تراکنش قدیمی روی موجودی
+        const after = cur - before - amt;
+        if (after < 0 && after < cur) {
           warn.hidden = false;
           warn.innerHTML = `با ثبت این هزینه موجودی حسابت منفی می‌شود.<br>موجودی بعد از ثبت: ${num(after)} ${unitLabel()}<br><b>مطمئنی که می‌خوای این هزینه ثبت بشه؟</b><div class="btns"><button class="btn danger sm" id="fForce">بله، ثبت کن</button><button class="btn ghost sm" id="fCancel">انصراف</button></div>`;
           $("#fForce", root).addEventListener("click", () => save(true));
@@ -509,14 +885,162 @@ function openAdd() {
         }
       }
       const btn = $("#fSave", root); btn.disabled = true;
+      const cat = $("#fCat", root).value.trim();
+      const data = { date: iso, amount: amt, type, category: cat, note: $("#fNote", root).value.trim(), tags, ts: edit ? existing.ts : Date.now() };
       try {
-        await ref.add({ date: iso, amount: amt, type, category: $("#fCat", root).value.trim(), note: $("#fNote", root).value.trim(), ts: Date.now() });
-        closeSheet(); toast("ثبت شد");
-      } catch (e) { btn.disabled = false; toast("ثبت نشد؛ دوباره امتحان کن"); }
+        if (edit) { state.expanded = null; await ref.update(existing.id, data); } else await ref.add(data);
+        closeSheet();
+        const bn = type === "expense" ? budgetNote(cat, iso) : "";
+        toast((edit ? "تغییرات ذخیره شد" : "ثبت شد") + (bn ? ` · ${bn}` : ""));
+      } catch (e) {
+        btn.disabled = false;
+        toast(dbErrorMessage(e, edit ? "ویرایش تراکنش ذخیره نشد" : "ثبت تراکنش انجام نشد"));
+      }
     };
     $("#fSave", root).addEventListener("click", () => save(false));
     amount.focus();
   });
+}
+
+function openFilter() {
+  const f = { ...state.filter };
+  const cats = allCats(false), tagsAll = tagCounts();
+  const opt = (v, l, cur) => `<option value="${esc(v)}" ${cur === v ? "selected" : ""}>${esc(l)}</option>`;
+  openSheet("فیلتر تراکنش‌ها", `
+    <div class="seg three" role="group" aria-label="نوع"><button type="button" data-ft="all" class="${f.type === "all" ? "on" : ""}">همه</button><button type="button" data-ft="income" class="${f.type === "income" ? "on" : ""}">درآمد</button><button type="button" data-ft="expense" class="${f.type === "expense" ? "on" : ""}">هزینه</button></div>
+    <div class="two">
+      <div class="field"><label for="ftCat">دسته</label><select id="ftCat">${opt("", "همه", f.cat)}${opt("__none", "بدون دسته", f.cat)}${cats.map((c) => opt(c, c, f.cat)).join("")}</select></div>
+      <div class="field"><label for="ftTag">برچسب</label><select id="ftTag">${opt("", "همه", f.tag)}${tagsAll.map((g) => opt(g, "#" + g, f.tag)).join("")}</select></div>
+    </div>
+    <div class="two">
+      <div class="field"><label for="ftFrom">از تاریخ</label><input id="ftFrom" inputmode="numeric" autocomplete="off" placeholder="۱۴۰۵/۰۸/۰۱" value="${f.from ? esc(toFa(showJ(f.from))) : ""}"></div>
+      <div class="field"><label for="ftTo">تا تاریخ</label><input id="ftTo" inputmode="numeric" autocomplete="off" placeholder="۱۴۰۵/۰۸/۳۰" value="${f.to ? esc(toFa(showJ(f.to))) : ""}"></div>
+    </div>
+    <div class="presets"><button type="button" class="tag" data-pre="this">این ماه</button><button type="button" class="tag" data-pre="prev">ماه قبل</button><button type="button" class="tag" data-pre="d30">۳۰ روز اخیر</button><button type="button" class="tag" data-pre="none">همه‌ی زمان‌ها</button></div>
+    <div class="two" style="margin-top:14px"><button class="btn primary" id="ftApply">اعمال</button><button class="btn ghost" id="ftClear">پاک کردن</button></div>`, (root) => {
+    root.querySelectorAll("[data-ft]").forEach((b) => b.addEventListener("click", () => {
+      f.type = b.dataset.ft; root.querySelectorAll("[data-ft]").forEach((x) => x.classList.toggle("on", x === b));
+    }));
+    root.querySelectorAll("[data-pre]").forEach((b) => b.addEventListener("click", () => {
+      const [jy, jm] = curJ(); let a = "", z = "";
+      if (b.dataset.pre === "this") [a, z] = monthBounds(jy, jm);
+      else if (b.dataset.pre === "prev") [a, z] = monthBounds(jm === 1 ? jy - 1 : jy, jm === 1 ? 12 : jm - 1);
+      else if (b.dataset.pre === "d30") { const d = new Date(); d.setDate(d.getDate() - 29); a = isoOf(d.getFullYear(), d.getMonth() + 1, d.getDate()); z = todayISO(); }
+      $("#ftFrom", root).value = a ? toFa(showJ(a)) : ""; $("#ftTo", root).value = z ? toFa(showJ(z)) : "";
+    }));
+    $("#ftApply", root).addEventListener("click", () => {
+      const fr = $("#ftFrom", root).value.trim(), to = $("#ftTo", root).value.trim();
+      const a = fr ? parseDateInput(fr) : "", z = to ? parseDateInput(to) : "";
+      if ((fr && !a) || (to && !z)) { toast("تاریخ را مثل ۱۴۰۵/۰۸/۰۱ وارد کن"); return; }
+      if (a && z && a > z) { toast("تاریخ شروع بعد از پایان است"); return; }
+      state.filter = { ...state.filter, type: f.type, cat: $("#ftCat", root).value, tag: $("#ftTag", root).value, from: a, to: z };
+      state.limit = 60; closeSheet(); renderView();
+    });
+    $("#ftClear", root).addEventListener("click", () => { state.filter = { ...EMPTY_FILTER, q: state.filter.q }; state.limit = 60; closeSheet(); renderView(); });
+  });
+}
+
+function openBudget(cat) {
+  const edit = !!cat, cur = edit ? state.budgets[cat] : 0;
+  const cats = allCats(true).filter((c) => !(c in state.budgets));
+  openSheet(edit ? "ویرایش بودجه" : "بودجه‌ی جدید", `
+    <p class="hint" style="margin-top:0">سقف هزینه‌ی ماهانه برای یک دسته. هر ماه شمسی از اول حساب می‌شود.</p>
+    <div class="field"><label for="bCat">دسته</label><input id="bCat" list="bCatList" autocomplete="off" placeholder="مثلاً خوراک" value="${edit ? esc(cat) : ""}" ${edit ? "readonly" : ""}><datalist id="bCatList">${cats.map((c) => `<option value="${esc(c)}">`).join("")}</datalist></div>
+    <div class="field"><label for="bAmt">سقف ماهانه (${unitLabel()})</label><input id="bAmt" inputmode="numeric" autocomplete="off" placeholder="۰" value="${edit ? fmtInput(cur) : ""}"></div>
+    <button class="btn primary block" id="bbSave">${edit ? "ذخیره" : "ساخت بودجه"}</button>
+    ${edit ? `<div id="bbDelBox" style="margin-top:10px"><button class="btn ghost block" id="bbDel">حذف این بودجه</button></div>` : ""}`, (root) => {
+    const amt = $("#bAmt", root);
+    amt.addEventListener("input", () => liveFormat(amt, false));
+    $("#bbSave", root).addEventListener("click", async () => {
+      const c = $("#bCat", root).value.trim().slice(0, 100), a = parseAmountInput(amt.value, false);
+      if (!c) { toast("دسته را بنویس"); return; }
+      if (!a || a <= 0) { toast("سقف را درست وارد کن"); return; }
+      if (!edit && c in state.budgets) { toast("برای این دسته بودجه داری؛ از لیست ویرایشش کن"); return; }
+      const b = $("#bbSave", root); b.disabled = true;
+      try { await ref.budget.set(c, a); closeSheet(); toast("بودجه ذخیره شد"); } catch (e) { b.disabled = false; toast("ذخیره نشد؛ دوباره امتحان کن"); }
+    });
+    const del = $("#bbDel", root);
+    if (del) del.addEventListener("click", () => {
+      $("#bbDelBox", root).innerHTML = `<div class="warn">این بودجه حذف شود؟ تراکنش‌ها دست نمی‌خورند.<div class="btns"><button class="btn danger sm" id="bbYes">بله، حذف کن</button><button class="btn ghost sm" id="bbNo">نه</button></div></div>`;
+      $("#bbNo", root).addEventListener("click", () => { $("#bbDelBox", root).innerHTML = `<button class="btn ghost block" id="bbDel2">حذف این بودجه</button>`; });
+      $("#bbYes", root).addEventListener("click", async () => {
+        try { await ref.budget.del(cat); closeSheet(); toast("بودجه حذف شد"); } catch (e) { toast("حذف نشد"); }
+      });
+    });
+    (edit ? amt : $("#bCat", root)).focus();
+  });
+}
+
+function openGoalForm(g) {
+  const edit = !!g;
+  openSheet(edit ? "ویرایش هدف" : "هدف جدید", `
+    <div class="field"><label for="gTitle">عنوان</label><input id="gTitle" autocomplete="off" placeholder="مثلاً سفر شمال" value="${edit ? esc(g.title) : ""}" maxlength="100"></div>
+    <div class="field"><label for="gTarget">مبلغ هدف (${unitLabel()})</label><input id="gTarget" inputmode="numeric" autocomplete="off" placeholder="۰" value="${edit ? fmtInput(g.target) : ""}"></div>
+    <div class="field"><label for="gDate">تاریخ مقصد (اختیاری)</label><input id="gDate" inputmode="numeric" autocomplete="off" placeholder="۱۴۰۶/۰۱/۱۵" value="${edit && g.deadline ? esc(toFa(showJ(g.deadline))) : ""}"></div>
+    <button class="btn primary block" id="ggSave">${edit ? "ذخیره" : "ساخت هدف"}</button>`, (root) => {
+    const tg = $("#gTarget", root);
+    tg.addEventListener("input", () => liveFormat(tg, false));
+    $("#ggSave", root).addEventListener("click", async () => {
+      const title = $("#gTitle", root).value.trim(), target = parseAmountInput(tg.value, false);
+      const dRaw = $("#gDate", root).value.trim(), dl = dRaw ? parseDateInput(dRaw) : "";
+      if (!title) { toast("عنوان را بنویس"); return; }
+      if (!target || target <= 0) { toast("مبلغ هدف را درست وارد کن"); return; }
+      if (dRaw && !dl) { toast("تاریخ را مثل ۱۴۰۶/۰۱/۱۵ وارد کن"); return; }
+      const b = $("#ggSave", root); b.disabled = true;
+      try {
+        if (edit) await ref.goal.update(g.id, { title, target, deadline: dl || null }); else await ref.goal.add({ title, target, saved: 0, deadline: dl || null });
+        closeSheet(); toast(edit ? "هدف ذخیره شد" : "هدف ساخته شد");
+      } catch (e) { b.disabled = false; toast("ذخیره نشد؛ دوباره امتحان کن"); }
+    });
+    $("#gTitle", root).focus();
+  });
+}
+
+function openGoal(id) {
+  const g = state.goals.find((x) => x.id === id); if (!g) return;
+  const left = Math.max(0, g.target - g.saved), pct = Math.min(100, Math.round((g.saved / g.target) * 100));
+  openSheet(g.title, `
+    <div class="gsum"><div class="bar tall"><i class="${g.saved >= g.target ? "ok" : "goalbar"}" style="width:${pct}%"></i></div>
+      <div class="bsub"><span>${num(g.saved)} از ${num(g.target)} ${unitLabel()}</span><span>${g.saved >= g.target ? "رسیدی ✓" : `${num(left)} مانده`}</span></div></div>
+    <div class="field" style="margin-top:14px"><label for="gAmt">مبلغ (${unitLabel()})</label><input id="gAmt" inputmode="numeric" autocomplete="off" placeholder="۰"></div>
+    <div class="two"><button class="btn primary" id="gAdd">واریز به هدف</button><button class="btn ghost" id="gSub">برداشت از هدف</button></div>
+    <div class="two" style="margin-top:10px"><button class="btn ghost sm" id="gEdit">ویرایش هدف</button><button class="btn ghost sm" id="gDel">حذف هدف</button></div>
+    <div id="gDelBox"></div>`, (root) => {
+    const amt = $("#gAmt", root);
+    amt.addEventListener("input", () => liveFormat(amt, false));
+    const move = async (sign) => {
+      const a = parseAmountInput(amt.value, false);
+      if (!a || a <= 0) { toast("مبلغ را درست وارد کن"); amt.focus(); return; }
+      const next = g.saved + sign * a;
+      if (next < 0) { toast("بیشتر از مبلغ پس‌اندازشده نمی‌شود برداشت"); return; }
+      try { await ref.goal.update(g.id, { saved: next }); closeSheet(); toast(next >= g.target && g.saved < g.target ? "تبریک! به هدفت رسیدی" : sign > 0 ? "واریز ثبت شد" : "برداشت ثبت شد"); }
+      catch (e) { toast("ثبت نشد؛ دوباره امتحان کن"); }
+    };
+    $("#gAdd", root).addEventListener("click", () => move(1));
+    $("#gSub", root).addEventListener("click", () => move(-1));
+    $("#gEdit", root).addEventListener("click", () => openGoalForm(g));
+    $("#gDel", root).addEventListener("click", () => {
+      $("#gDelBox", root).innerHTML = `<div class="warn" style="margin-top:12px">این هدف حذف شود؟<div class="btns"><button class="btn danger sm" id="gYes">بله، حذف کن</button><button class="btn ghost sm" id="gNo">نه</button></div></div>`;
+      $("#gNo", root).addEventListener("click", () => { $("#gDelBox", root).innerHTML = ""; });
+      $("#gYes", root).addEventListener("click", async () => { try { await ref.goal.del(g.id); closeSheet(); toast("هدف حذف شد"); } catch (e) { toast("حذف نشد"); } });
+    });
+  });
+}
+
+/* ---------- نصب روی صفحه‌ی اصلی (PWA) ---------- */
+let deferredInstall = null;
+const isStandalone = () => { try { return matchMedia("(display-mode: standalone)").matches || navigator.standalone === true; } catch (e) { return false; } };
+const isIOS = () => /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+async function openInstall() {
+  if (deferredInstall) {
+    const p = deferredInstall; deferredInstall = null;
+    try { p.prompt(); await p.userChoice; } catch (e) { /* ignore */ }
+    return;
+  }
+  const steps = isIOS()
+    ? `<ol class="steps"><li>این صفحه را در <b>Safari</b> باز کن (نه داخل برنامه‌ی دیگر).</li><li>دکمه‌ی <b>اشتراک‌گذاری</b> (مربع با فلش رو به بالا) را بزن.</li><li>پایین لیست، <b>Add to Home Screen</b> (افزودن به صفحه‌ی اصلی) را انتخاب کن.</li><li>روی <b>Add</b> بزن. آیکون برنامه روی صفحه‌ی اصلی می‌آید.</li></ol>`
+    : `<ol class="steps"><li>این صفحه را در <b>Chrome</b> باز کن.</li><li>منوی سه‌نقطه (⋮) بالای صفحه را بزن.</li><li><b>Install app</b> (نصب برنامه) یا <b>Add to Home screen</b> را انتخاب کن.</li><li>تأیید کن. آیکون برنامه روی صفحه‌ی اصلی می‌آید.</li></ol>`;
+  openSheet("نصب روی صفحه‌ی اصلی", `<p class="hint" style="margin-top:0">بعد از نصب، برنامه تمام‌صفحه و بدون نوار مرورگر باز می‌شود و مثل بقیه‌ی برنامه‌ها آیکون دارد.</p>${steps}<p class="hint">برای ورود و دیدن داده‌ها اینترنت لازم است.</p>`);
 }
 
 function openBalance() {
@@ -530,8 +1054,16 @@ function openBalance() {
     $("#bSave", root).addEventListener("click", async () => {
       const cur = parseAmountInput(inp.value, true);
       if (cur === null) { toast("یک عدد وارد کن"); return; }
-      try { await saveSettings({ opening: cur - (inc - exp) }); closeSheet(); toast("موجودی تنظیم شد"); }
-      catch (e) { toast("ذخیره نشد؛ دوباره امتحان کن"); }
+      const btn = $("#bSave", root);
+      btn.disabled = true;
+      try {
+        await saveSettings({ opening: cur - (inc - exp) });
+        closeSheet();
+        toast("موجودی تنظیم شد");
+      } catch (e) {
+        btn.disabled = false;
+        toast(dbErrorMessage(e, "تنظیم موجودی ذخیره نشد"));
+      }
     });
     inp.focus();
   });
@@ -625,9 +1157,9 @@ function openCsvIn() {
       const btn = $("#cGo", root); btn.disabled = true;
       let ok = 0;
       try {
-        for (const t of items) { await ref.add({ ...t, ts: Date.now() }); ok++; if (ok % 10 === 0) $("#cInfo", root).textContent = `${toFa(ok)} از ${toFa(items.length)}…`; }
+        ok = await ref.addMany(items, (n) => { $("#cInfo", root).textContent = `${toFa(n)} از ${toFa(items.length)}…`; });
         closeSheet(); toast(`${toFa(ok)} تراکنش وارد شد`);
-      } catch (e) { toast(`فقط ${toFa(ok)} مورد وارد شد؛ دوباره امتحان کن (تکراری‌ها رد می‌شوند)`); btn.disabled = false; }
+      } catch (e) { toast(`فقط ${toFa(e.done || 0)} مورد وارد شد؛ دوباره امتحان کن (تکراری‌ها رد می‌شوند)`); btn.disabled = false; }
       importing = false;
     });
   });
@@ -645,8 +1177,8 @@ function saveFile(name, text) {
 }
 async function exportCsv() {
   if (!state.txs.length) { toast("تراکنشی برای پشتیبان نیست"); return; }
-  const lines = ["id,date,amount,type,category,note"];
-  [...state.txs].reverse().forEach((t, i) => lines.push([i + 1, showJ(t.date), t.amount, t.type, t.category || "", t.note || ""].map(csvCell).join(",")));
+  const lines = ["id,date,amount,type,category,note,tags"];
+  [...state.txs].reverse().forEach((t, i) => lines.push([i + 1, showJ(t.date), t.amount, t.type, t.category || "", t.note || "", (t.tags || []).join("|")].map(csvCell).join(",")));
   saveFile("finance.csv", "\uFEFF" + lines.join("\r\n"));
   try { localStorage.setItem("finance_backup", todayISO()); } catch (e) { /* ignore */ }
   toast("فایل پشتیبان ساخته شد"); renderView();
@@ -654,72 +1186,330 @@ async function exportCsv() {
 
 /* ============ رویدادها ============ */
 document.addEventListener("click", async (e) => {
-  const el = e.target.closest("[data-tab],[data-act],[data-row],[data-del],[data-del-yes],[data-del-no],[data-unit],[data-close]");
+  const el = e.target.closest("[data-auth],[data-tab],[data-act],[data-row],[data-del],[data-del-yes],[data-del-no],[data-unit],[data-close],[data-edit],[data-clr],[data-budget],[data-goal]");
   if (!el) return;
+  if (el.dataset.auth) { authClick(el.dataset.auth); return; }
   if (el.hasAttribute("data-close")) { closeSheet(); return; }
   if (el.dataset.tab) { state.tab = el.dataset.tab; render(); window.scrollTo(0, 0); return; }
   if (el.dataset.row) { state.expanded = state.expanded === el.dataset.row ? null : el.dataset.row; state.confirmDel = null; renderView(); return; }
   if (el.dataset.del) { state.confirmDel = el.dataset.del; renderView(); return; }
+  if (el.dataset.edit) { const t = state.txs.find((x) => x.id === el.dataset.edit); if (t) openTxForm(t); return; }
+  if (el.dataset.clr) { const k = el.dataset.clr; if (k === "type") state.filter.type = "all"; else if (k === "cat") state.filter.cat = ""; else if (k === "tag") state.filter.tag = ""; else if (k === "date") { state.filter.from = ""; state.filter.to = ""; } state.limit = 60; renderView(); return; }
+  if (el.dataset.budget) { openBudget(el.dataset.budget); return; }
+  if (el.dataset.goal) { openGoal(el.dataset.goal); return; }
   if (el.hasAttribute("data-del-no")) { state.confirmDel = null; renderView(); return; }
   if (el.dataset.delYes) {
     const id = el.dataset.delYes; state.expanded = null; state.confirmDel = null;
     try { await ref.doc(id).delete(); toast("حذف شد"); } catch (err) { toast("حذف نشد"); }
     return;
   }
-  if (el.dataset.unit) { try { await saveSettings({ unit: el.dataset.unit }); } catch (err) { toast("ذخیره نشد"); } return; }
+  if (el.dataset.unit) {
+    try { await saveSettings({ unit: el.dataset.unit }); }
+    catch (err) { toast(dbErrorMessage(err, "تغییر واحد پول ذخیره نشد")); }
+    return;
+  }
   const act = el.dataset.act;
-  if (!ref && act !== undefined) { toast("ذخیره‌سازی در دسترس نیست"); return; }
-  if (act === "add") openAdd();
+  if (!ref && act !== undefined && act !== "install") { toast("ذخیره‌سازی در دسترس نیست"); return; }
+  if (act === "add") openTxForm();
+  else if (act === "filter") openFilter();
+  else if (act === "clear-filter") { state.filter = { ...EMPTY_FILTER }; renderView(); }
+  else if (act === "budget-new") openBudget();
+  else if (act === "goal-new") openGoalForm();
+  else if (act === "install") openInstall();
   else if (act === "sms") openSms();
   else if (act === "balance") openBalance();
   else if (act === "csv-in") openCsvIn();
   else if (act === "csv-out") exportCsv();
   else if (act === "more-rows") { state.limit += 60; renderView(); }
+  else if (act === "logout") { try { await sb.auth.signOut(); } catch (err) { toast("خروج انجام نشد"); } }
+  else if (act === "migrate") migrateLegacy();
+  else if (act === "migrate-skip") { state.legacyDismissed = true; renderView(); }
 });
 document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("#sheetRoot").hidden) closeSheet(); });
+let searchTimer;
+document.addEventListener("input", (e) => {
+  if (e.target.id !== "fQ") return;
+  const v = e.target.value;
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => { state.filter.q = v; state.limit = 60; const l = $("#txList"); if (l) l.innerHTML = txListHTML(); }, 120);
+});
 
-/* ============ ذخیره‌سازی محلی (localStorage) ============ */
-const LS_KEY = "finance_manager_v1";
-function makeLocalRef() {
-  let docs = {}, persistent = true;
-  try { const raw = localStorage.getItem(LS_KEY); if (raw) docs = JSON.parse(raw) || {}; } catch (e) { persistent = false; }
-  try { localStorage.setItem(LS_KEY + "_t", "1"); localStorage.removeItem(LS_KEY + "_t"); } catch (e) { persistent = false; }
-  const subs = [];
-  const snap = () => ({ docs: Object.entries(docs).map(([id, v]) => ({ id, data: () => v })), metadata: { fromCache: false } });
-  const commit = (next) => {
-    if (persistent) localStorage.setItem(LS_KEY, JSON.stringify(next)); // اگر جا نبود خطا می‌دهد و چیزی عوض نمی‌شود
-    docs = next; subs.forEach((f) => f(snap()));
-  };
-  const newId = () => "t" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+/* ============ ذخیره‌سازی ابری (Supabase) ============ */
+let sb = null, session = null, recoveryFlag = false, lastReload = 0;
+const LEGACY_KEY = "finance_manager_v1";
+
+function loadScript(url, ms) {
+  return new Promise((res, rej) => {
+    const s = document.createElement("script"); const t = setTimeout(() => { s.remove(); rej(new Error("timeout")); }, ms);
+    s.src = url; s.onload = () => { clearTimeout(t); res(); }; s.onerror = () => { clearTimeout(t); s.remove(); rej(new Error("load")); };
+    document.head.appendChild(s);
+  });
+}
+async function loadLib() {
+  if (window.supabase && window.supabase.createClient) return true;
+  const urls = [
+    "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.93.3/dist/umd/supabase.js",
+    "https://unpkg.com/@supabase/supabase-js@2.93.3/dist/umd/supabase.js",
+    "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js",
+  ];
+  for (const u of urls) {
+    try { await loadScript(u, 9000); if (window.supabase && window.supabase.createClient) return true; } catch (e) { /* بعدی */ }
+  }
+  return false;
+}
+
+function makeCloudRef(userId) {
+  const docs = new Map();
+  let listener = null;
+  const snap = () => ({ docs: [...docs].map(([id, v]) => ({ id, data: () => v })), metadata: { fromCache: false } });
+  const emit = () => { if (listener) listener(snap()); };
+  const cap = { tags: true, plan: true };
+  const COLS = () => "id,date,amount,type,category,note,created_at" + (cap.tags ? ",tags" : "");
+  const GCOLS = "id,title,target,saved,deadline,created_at";
+  const missing = (e) => !!e && (["42703", "42P01", "PGRST204", "PGRST205"].includes(e.code) || /column|relation|schema cache|does not exist/i.test(e.message || ""));
+  const rowToDoc = (r) => ({ date: r.date, amount: Number(r.amount), type: r.type, category: r.category || "", note: r.note || "", tags: Array.isArray(r.tags) ? r.tags : [], ts: Date.parse(r.created_at) || 0 });
+  const docToRow = (d) => { const o = { date: d.date, amount: d.amount, type: d.type, category: d.category || "", note: d.note || "" }; if (cap.tags) o.tags = parseTags(d.tags || []); return o; };
+  const goalDoc = (r) => ({ _k: "goal", title: r.title, target: Number(r.target), saved: Number(r.saved) || 0, deadline: r.deadline || "", ts: Date.parse(r.created_at) || 0 });
+
+  async function loadAll() {
+    const fresh = new Map();
+    const PAGE = 1000; // سرور در هر درخواست حداکثر ۱۰۰۰ ردیف می‌دهد؛ پس صفحه‌به‌صفحه می‌خوانیم
+    for (let from = 0; ; from += PAGE) {
+      let { data, error } = await sb.from("transactions").select(COLS()).order("date", { ascending: false }).order("created_at", { ascending: false }).order("id").range(from, from + PAGE - 1);
+      if (error && cap.tags && missing(error)) { cap.tags = false; ({ data, error } = await sb.from("transactions").select(COLS()).order("date", { ascending: false }).order("created_at", { ascending: false }).order("id").range(from, from + PAGE - 1)); }
+      if (error) throw error;
+      data.forEach((r) => fresh.set(r.id, rowToDoc(r)));
+      if (data.length < PAGE) break;
+    }
+    const st = await sb.from("settings").select("opening,unit").maybeSingle();
+    if (st.error) throw st.error;
+    if (st.data) fresh.set("settings", { opening: Number(st.data.opening) || 0, unit: st.data.unit });
+    const bu = await sb.from("budgets").select("category,amount");
+    if (bu.error) { if (missing(bu.error)) cap.plan = false; else throw bu.error; }
+    else bu.data.forEach((r) => fresh.set("b:" + r.category, { _k: "budget", category: r.category, amount: Number(r.amount) }));
+    if (cap.plan) {
+      const go = await sb.from("goals").select(GCOLS).order("created_at", { ascending: true });
+      if (go.error) { if (missing(go.error)) cap.plan = false; else throw go.error; }
+      else go.data.forEach((r) => fresh.set("g:" + r.id, goalDoc(r)));
+    }
+    docs.clear(); fresh.forEach((v, k) => docs.set(k, v));
+  }
+
   return {
-    persistent: () => persistent,
-    onSnapshot(next) { subs.push(next); setTimeout(() => next(snap()), 0); return () => {}; },
-    async add(data) { const id = newId(); commit({ ...docs, [id]: data }); return { id }; },
+    cap,
+    async reload() { await loadAll(); emit(); },
+    onSnapshot(next) { listener = next; emit(); return () => { listener = null; }; },
+    async add(data) {
+      const { data: row, error } = await sb.from("transactions").insert(docToRow(data)).select(COLS()).single();
+      if (error) throw error;
+      docs.set(row.id, rowToDoc(row)); emit(); return { id: row.id };
+    },
+    async update(id, data) {
+      const { data: row, error } = await sb.from("transactions").update(docToRow(data)).eq("id", id).select(COLS()).single();
+      if (error) throw error;
+      docs.set(id, rowToDoc(row)); emit();
+    },
+    budget: {
+      async set(category, amount) {
+        const { error } = await sb.from("budgets").upsert({ user_id: userId, category, amount: Math.round(amount) }, { onConflict: "user_id,category" });
+        if (error) throw error;
+        docs.set("b:" + category, { _k: "budget", category, amount: Math.round(amount) }); emit();
+      },
+      async del(category) {
+        const { error } = await sb.from("budgets").delete().eq("category", category);
+        if (error) throw error;
+        docs.delete("b:" + category); emit();
+      },
+    },
+    goal: {
+      async add(g) {
+        const { data: row, error } = await sb.from("goals").insert({ title: g.title, target: g.target, saved: g.saved || 0, deadline: g.deadline || null }).select(GCOLS).single();
+        if (error) throw error;
+        docs.set("g:" + row.id, goalDoc(row)); emit();
+      },
+      async update(id, patch) {
+        const { data: row, error } = await sb.from("goals").update(patch).eq("id", id).select(GCOLS).single();
+        if (error) throw error;
+        docs.set("g:" + id, goalDoc(row)); emit();
+      },
+      async del(id) {
+        const { error } = await sb.from("goals").delete().eq("id", id);
+        if (error) throw error;
+        docs.delete("g:" + id); emit();
+      },
+    },
+    async addMany(list, onProgress) {
+      let done = 0;
+      try {
+        for (let i = 0; i < list.length; i += 200) {
+          const chunk = list.slice(i, i + 200).map(docToRow);
+          const { data, error } = await sb.from("transactions").insert(chunk).select(COLS());
+          if (error) throw error;
+          data.forEach((r) => docs.set(r.id, rowToDoc(r)));
+          done += data.length; emit(); if (onProgress) onProgress(done);
+        }
+      } catch (e) { e.done = done; throw e; }
+      return done;
+    },
     doc(id) {
       return {
-        async set(d) { commit({ ...docs, [id]: d }); },
-        async delete() { const n = { ...docs }; delete n[id]; commit(n); },
+        async set(d) {
+          if (id !== "settings") throw new Error("unsupported");
+          const row = { user_id: userId, opening: Math.round(d.opening), unit: d.unit };
+          const { error } = await sb.from("settings").upsert(row, { onConflict: "user_id" });
+          if (error) throw error;
+          docs.set("settings", { opening: row.opening, unit: row.unit }); emit();
+        },
+        async delete() {
+          const { error } = await sb.from("transactions").delete().eq("id", id);
+          if (error) throw error;
+          docs.delete(id); emit();
+        },
       };
     },
   };
 }
 
-/* ============ راه‌اندازی ============ */
-(function init() {
-  render();
-  ref = makeLocalRef();
-  if (!ref.persistent()) state.noPersist = true;
-  ref.onSnapshot((snap) => {
-    const txs = []; let settings = { opening: 0, unit: "toman" };
-    snap.docs.forEach((d) => {
-      const v = d.data(); if (!v) return;
-      if (d.id === "settings") settings = { opening: Number(v.opening) || 0, unit: v.unit === "rial" ? "rial" : "toman" };
-      else if ((v.type === "income" || v.type === "expense") && Number.isFinite(Number(v.amount))) txs.push({ id: d.id, date: String(v.date), amount: Number(v.amount), type: v.type, category: String(v.category || ""), note: String(v.note || ""), ts: Number(v.ts) || 0 });
-    });
-    txs.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : b.ts - a.ts));
-    state.txs = txs; state.settings = settings; state.loaded = true;
-    render();
+function handleSnapshot(snap) {
+  const txs = [], budgets = {}, goals = []; let settings = { opening: 0, unit: "toman" };
+  snap.docs.forEach((d) => {
+    const v = d.data(); if (!v) return;
+    if (d.id === "settings") settings = { opening: Number(v.opening) || 0, unit: v.unit === "rial" ? "rial" : "toman" };
+    else if (v._k === "budget") budgets[String(v.category)] = Number(v.amount) || 0;
+    else if (v._k === "goal") goals.push({ id: d.id.slice(2), title: String(v.title || ""), target: Number(v.target) || 1, saved: Number(v.saved) || 0, deadline: v.deadline ? String(v.deadline) : "", ts: Number(v.ts) || 0 });
+    else if ((v.type === "income" || v.type === "expense") && Number.isFinite(Number(v.amount))) txs.push({ id: d.id, date: String(v.date), amount: Number(v.amount), type: v.type, category: String(v.category || ""), note: String(v.note || ""), tags: Array.isArray(v.tags) ? parseTags(v.tags) : [], ts: Number(v.ts) || 0 });
   });
+  txs.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : b.ts - a.ts));
+  goals.sort((a, b) => a.ts - b.ts);
+  state.txs = txs; state.settings = settings; state.budgets = budgets; state.goals = goals; state.loaded = true;
+  if (ref && ref.cap) { state.noPlan = !ref.cap.plan; state.schemaOld = !ref.cap.tags; }
+  render();
+}
+
+function readLegacy() {
+  try {
+    const raw = localStorage.getItem(LEGACY_KEY); if (!raw) return null;
+    const docsObj = JSON.parse(raw) || {}; const items = []; let settings = null;
+    for (const [id, v] of Object.entries(docsObj)) {
+      if (id === "settings") settings = { opening: Number(v.opening) || 0, unit: v.unit === "rial" ? "rial" : "toman" };
+      else if (v && (v.type === "income" || v.type === "expense") && Number(v.amount) > 0 && /^\d{4}-\d{2}-\d{2}$/.test(String(v.date))) items.push({ date: String(v.date), amount: Math.round(Number(v.amount)), type: v.type, category: String(v.category || ""), note: String(v.note || "") });
+    }
+    return items.length || settings ? { items, settings, raw } : null;
+  } catch (e) { return null; }
+}
+async function migrateLegacy() {
+  const lg = state.legacy; if (!lg || importing) return;
+  importing = true; toast("در حال انتقال…");
+  try {
+    const key = (t) => [t.date, t.amount, t.type, t.category || "", t.note || ""].join("|");
+    const have = new Set(state.txs.map(key));
+    const fresh = lg.items.filter((t) => !have.has(key(t)));
+    const accountWasEmpty = !state.txs.length && state.settings.opening === 0; // قبل از اضافه‌کردن بررسی می‌شود
+    if (fresh.length) await ref.addMany(fresh);
+    if (lg.settings && accountWasEmpty) await saveSettings({ opening: lg.settings.opening, unit: lg.settings.unit });
+    try { localStorage.setItem(LEGACY_KEY + "_migrated", lg.raw); localStorage.removeItem(LEGACY_KEY); } catch (e) { /* ignore */ }
+    state.legacy = null; renderView(); toast(`${toFa(fresh.length)} تراکنش منتقل شد`);
+  } catch (e) { toast("انتقال کامل نشد؛ دوباره امتحان کن (تکراری‌ها رد می‌شوند)"); }
+  importing = false;
+}
+
+async function onSession(s) {
+  if (s && session && session.user.id === s.user.id) { session = s; return; }
+  if (!s) { session = null; ref = null; state.txs = []; state.loaded = false; state.legacy = null; state.expanded = null; state.budgets = {}; state.goals = []; state.filter = { ...EMPTY_FILTER }; state.mode = "auth"; state.authTab = "login"; render(); return; }
+  session = s; state.loaded = false; state.mode = "app"; state.tab = "tx"; state.limit = 60;
+  ref = makeCloudRef(s.user.id);
+  state.legacy = readLegacy(); state.legacyDismissed = false;
+  render();
+  try { await ref.reload(); ref.onSnapshot(handleSnapshot); }
+  catch (e) { state.slow = true; render(); toast("خواندن اطلاعات انجام نشد؛ اینترنت را بررسی کن"); ref.onSnapshot(handleSnapshot); }
+}
+
+function faAuthError(e) {
+  const m = String((e && (e.code || e.message)) || "").toLowerCase();
+  if (m.includes("invalid_credentials") || m.includes("invalid login")) return "ایمیل یا رمز اشتباه است.";
+  if (m.includes("already") || m.includes("user_already_exists")) return "این ایمیل قبلاً ثبت شده؛ وارد شو.";
+  if (m.includes("email_not_confirmed") || m.includes("not confirmed")) return "ایمیل هنوز تأیید نشده؛ ایمیلت را بررسی کن.";
+  if (m.includes("weak_password") || m.includes("password should")) return "رمز ضعیف است؛ طولانی‌تر و پیچیده‌تر انتخاب کن.";
+  if (m.includes("rate") || m.includes("429")) return "تعداد تلاش‌ها زیاد بود؛ چند دقیقه بعد دوباره امتحان کن.";
+  if (m.includes("signup_disabled") || m.includes("signups not allowed")) return "ثبت‌نام جدید غیرفعال است.";
+  if (m.includes("failed to fetch") || m.includes("network") || m.includes("fetch")) return "اتصال به سرور برقرار نشد؛ اینترنت یا فیلترشکن را بررسی کن.";
+  return "خطا: " + (e && (e.code || e.message) ? String(e.code || e.message).slice(0, 80) : "نامشخص");
+}
+
+async function authClick(kind) {
+  if (kind === "login" || kind === "signup") { state.authTab = kind; state.authInfo = ""; renderGate(); return; }
+  if (kind === "retry") { location.reload(); return; }
+  if (kind === "forgot") {
+    const email = ($("#aEmail") || {}).value ? $("#aEmail").value.trim() : "";
+    const msg = $("#aMsg");
+    if (!/^\S+@\S+\.\S+$/.test(email)) { msg.className = "err"; msg.textContent = "اول ایمیلت را بنویس، بعد «رمزم را فراموش کرده‌ام» را بزن."; return; }
+    try {
+      const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: location.origin + location.pathname });
+      if (error) throw error;
+      msg.className = "okmsg"; msg.textContent = "اگر این ایمیل ثبت شده باشد، لینک تغییر رمز برایش فرستاده شد.";
+    } catch (e) { msg.className = "err"; msg.textContent = faAuthError(e); }
+  }
+}
+
+document.addEventListener("submit", async (e) => {
+  if (e.target.id !== "authForm") return;
+  e.preventDefault();
+  const kind = e.target.dataset.kind, msg = $("#aMsg"), btn = $("#aGo");
+  const pw = $("#aPw").value, email = kind === "recovery" ? "" : $("#aEmail").value.trim();
+  msg.className = "err";
+  if (kind !== "recovery" && !/^\S+@\S+\.\S+$/.test(email)) { msg.textContent = "ایمیل را درست وارد کن."; return; }
+  if (kind !== "login" && pw.length < 8) { msg.textContent = "رمز باید حداقل ۸ نویسه باشد."; return; }
+  if (!pw) { msg.textContent = "رمز را وارد کن."; return; }
+  btn.disabled = true; msg.textContent = "…";
+  try {
+    if (kind === "signup") {
+      const { data, error } = await sb.auth.signUp({ email, password: pw });
+      if (error) throw error;
+      if (data.session) await onSession(data.session);
+      else { state.authTab = "login"; state.authInfo = "حساب ساخته شد. لینک تأییدی که به ایمیلت رفته را بزن، بعد وارد شو."; renderGate(); $("#aMsg").className = "okmsg"; }
+    } else if (kind === "recovery") {
+      const { error } = await sb.auth.updateUser({ password: pw });
+      if (error) throw error;
+      recoveryFlag = false; try { history.replaceState(null, "", location.pathname); } catch (e2) { /* ignore */ }
+      const { data } = await sb.auth.getSession(); await onSession(data.session);
+    } else {
+      const { data, error } = await sb.auth.signInWithPassword({ email, password: pw });
+      if (error) throw error;
+      await onSession(data.session);
+    }
+  } catch (err) { msg.className = "err"; msg.textContent = faAuthError(err); btn.disabled = false; }
+});
+
+document.addEventListener("visibilitychange", () => {
+  // با برگشتن به صفحه، اگر تغییری از دستگاه دیگر آمده باشد بخوان (حداکثر هر ۲۰ ثانیه)
+  if (document.hidden || !ref || state.mode !== "app" || importing || Date.now() - lastReload < 20000) return;
+  lastReload = Date.now(); ref.reload().catch(() => {});
+});
+
+window.addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); deferredInstall = e; });
+window.addEventListener("appinstalled", () => { deferredInstall = null; if (state.mode === "app") renderView(); });
+if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
+  window.addEventListener("load", () => { navigator.serviceWorker.register("sw.js").catch(() => { /* بدون سرویس‌ورکر هم برنامه کار می‌کند */ }); });
+}
+
+(async function init() {
+  render();
+  if (/PASTE_/.test(SUPABASE_URL + SUPABASE_KEY)) { state.mode = "setup"; render(); return; }
+  recoveryFlag = /type=recovery/.test(location.hash);
+  if (!(await loadLib())) { state.mode = "nolib"; render(); return; }
+  sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } });
+  sb.auth.onAuthStateChange((evt, s) => {
+    // طبق توصیه‌ی Supabase داخل این تابع مستقیم درخواست نمی‌زنیم
+    setTimeout(() => {
+      if (evt === "PASSWORD_RECOVERY") { recoveryFlag = true; state.mode = "recovery"; render(); return; }
+      if (recoveryFlag) return;
+      if (evt === "SIGNED_OUT") onSession(null);
+      else if (s && (evt === "SIGNED_IN" || evt === "INITIAL_SESSION")) onSession(s);
+    }, 0);
+  });
+  const { data } = await sb.auth.getSession();
+  if (recoveryFlag) { state.mode = "recovery"; render(); return; }
+  await onSession(data.session);
 })();
 </script>
 </body>
