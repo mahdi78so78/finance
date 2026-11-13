@@ -1,6 +1,6 @@
 /* سرویس‌ورکر: فقط برای باز شدن سریع و نصب‌پذیری.
    داده‌های Supabase هرگز کش نمی‌شوند و همیشه از سرور خوانده می‌شوند. */
-const VER = "finance-v2";
+const VER = "finance-v4-jalali-calendar";
 const SHELL = ["./", "index.html", "manifest.webmanifest", "icon-192.png", "icon-512.png", "icon-maskable-512.png", "apple-touch-icon.png"];
 const CDN = /^https:\/\/(cdn\.jsdelivr\.net|unpkg\.com|fonts\.googleapis\.com|fonts\.gstatic\.com)\//;
 

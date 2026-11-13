@@ -108,6 +108,8 @@ svg { display: block; }
 @media (hover: hover) and (pointer: fine) { .row:hover { background: var(--surface-2); } }
 .row .t { font-weight: 600; overflow-wrap: anywhere; line-height: 1.5; }
 .row .s { font-size: 12.5px; color: var(--muted); overflow-wrap: anywhere; line-height: 1.5; }
+.debt-person-meta { display: flex; flex-wrap: wrap; align-items: baseline; gap: 3px 12px; min-width: 0; }
+.debt-person-meta .t, .debt-person-meta .s { display: inline-block; }
 .ava { width: 40px; height: 40px; border-radius: 14px; display: grid; place-items: center; font-weight: 700; font-size: 16px;
   background: hsl(var(--h, 160) var(--ava-bg)); color: hsl(var(--h, 160) var(--ava-fg)); }
 .ava.inc { background: var(--income-soft); color: var(--income); }
@@ -258,6 +260,25 @@ textarea { resize: vertical; }
 .fab:active { transform: scale(.93); }
 .fab svg { width: 26px; height: 26px; }
 
+
+/* ---------- تقویم شمسی ---------- */
+.jcal { position: fixed; z-index: 36; width: min(340px, calc(100vw - 24px)); max-height: min(420px, calc(100dvh - 24px)); overflow-y: auto; margin: 0; padding: 12px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); box-shadow: var(--shadow); overscroll-behavior: contain; }
+.jcal[hidden] { display: none !important; }
+.jcal-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+.jcal-title { font-weight: 700; font-size: 14px; text-align: center; }
+.jcal-nav { display: flex; gap: 6px; }
+.jcal-nav button, .jcal-foot button { min-width: 36px; min-height: 36px; border: 0; border-radius: 10px; background: var(--surface-2); color: var(--fg); cursor: pointer; }
+.jcal-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; text-align: center; }
+.jcal-week { color: var(--muted); font-size: 11px; padding: 4px 0; }
+.jcal-day { min-height: 38px; border: 0; border-radius: 10px; background: transparent; color: var(--fg); cursor: pointer; font: inherit; font-size: 13px; }
+.jcal-day:hover { background: var(--surface-2); }
+.jcal-day.today { box-shadow: inset 0 0 0 1px var(--brand); color: var(--brand); font-weight: 700; }
+.jcal-day.selected { background: var(--brand); color: var(--on-brand); font-weight: 700; }
+.jcal-day:disabled { cursor: default; opacity: 0; }
+.jcal-foot { display: flex; justify-content: space-between; gap: 8px; margin-top: 10px; }
+.jcal-foot button { padding: 0 12px; font-size: 12px; }
+.jdate-input { cursor: pointer; }
+
 /* ---------- sheet & toast ---------- */
 .backdrop { position: fixed; inset: 0; background: rgba(6, 16, 14, .5); z-index: 30; }
 .sheet { position: fixed; inset: auto 0 0 0; z-index: 31; background: var(--surface); border-radius: 28px 28px 0 0; max-height: 92vh; max-height: 92dvh; overflow-y: auto; overscroll-behavior: contain; max-width: 560px; margin: 0 auto;
@@ -390,6 +411,111 @@ function parseTags(list) {
 const splitTagText = (s) => String(s ?? "").split(/[,،\n]+/);
 const jMonthLen = (jy, jm) => (jm <= 6 ? 31 : jm <= 11 ? 30 : jToISO(jy, 12, 30) ? 30 : 29);
 const monthBounds = (jy, jm) => [jToISO(jy, jm, 1), jToISO(jy, jm, jMonthLen(jy, jm))];
+let activeJcal = null;
+function closeActiveJcal() {
+  if (!activeJcal) return;
+  activeJcal.input.setAttribute("aria-expanded", "false");
+  activeJcal.panel.remove();
+  activeJcal = null;
+}
+function positionActiveJcal() {
+  if (!activeJcal) return;
+  const { input, panel } = activeJcal;
+  if (!input.isConnected || !panel.isConnected) { closeActiveJcal(); return; }
+  const rect = input.getBoundingClientRect();
+  const width = Math.min(340, Math.max(220, window.innerWidth - 24));
+  panel.style.width = `${width}px`;
+  const right = Math.max(12, Math.min(window.innerWidth - width - 12, window.innerWidth - rect.right));
+  const panelHeight = panel.getBoundingClientRect().height;
+  const below = window.innerHeight - rect.bottom;
+  const top = below >= panelHeight + 8 || rect.top < panelHeight + 16
+    ? Math.min(window.innerHeight - panelHeight - 12, rect.bottom + 8)
+    : Math.max(12, rect.top - panelHeight - 8);
+  panel.style.left = `${Math.max(12, Math.min(window.innerWidth - width - 12, window.innerWidth - right - width))}px`;
+  panel.style.top = `${top}px`;
+}
+document.addEventListener("pointerdown", (event) => {
+  if (activeJcal && event.target !== activeJcal.input && !activeJcal.panel.contains(event.target)) closeActiveJcal();
+});
+document.addEventListener("keydown", (event) => { if (event.key === "Escape" && activeJcal) closeActiveJcal(); });
+window.addEventListener("resize", positionActiveJcal);
+window.addEventListener("scroll", positionActiveJcal, true);
+function attachJalaliPicker(input, { allowClear = false } = {}) {
+  if (!input || input.dataset.jcalReady) return;
+  input.dataset.jcalReady = "1";
+  input.readOnly = true;
+  input.classList.add("jdate-input");
+  input.setAttribute("aria-haspopup", "dialog");
+  input.setAttribute("aria-expanded", "false");
+  input.setAttribute("aria-label", (input.getAttribute("aria-label") || input.id || "تاریخ") + "، انتخاب از تقویم شمسی");
+  const panel = document.createElement("div");
+  panel.className = "jcal";
+  panel.hidden = true;
+  let view = (() => {
+    const iso = parseDateInput(input.value || "");
+    return iso ? isoToJ(iso).slice(0, 2) : curJ().slice(0, 2);
+  })();
+  const weekdays = ["ش", "ی", "د", "س", "چ", "پ", "ج"];
+  const draw = () => {
+    const [jy, jm] = view;
+    const firstISO = jToISO(jy, jm, 1);
+    const [gy, gm, gd] = firstISO.split("-").map(Number);
+    const offset = (new Date(Date.UTC(gy, gm - 1, gd)).getUTCDay() + 1) % 7;
+    const len = jMonthLen(jy, jm);
+    const selectedISO = parseDateInput(input.value || "");
+    const selected = selectedISO ? isoToJ(selectedISO) : null;
+    const today = curJ();
+    let cells = weekdays.map(w => `<div class="jcal-week">${w}</div>`).join("");
+    for (let i = 0; i < offset; i++) cells += `<button type="button" class="jcal-day" disabled tabindex="-1"></button>`;
+    for (let day = 1; day <= len; day++) {
+      const isToday = today[0] === jy && today[1] === jm && today[2] === day;
+      const isSelected = selected && selected[0] === jy && selected[1] === jm && selected[2] === day;
+      cells += `<button type="button" class="jcal-day${isToday ? " today" : ""}${isSelected ? " selected" : ""}" data-jday="${day}" aria-pressed="${!!isSelected}">${toFa(day)}</button>`;
+    }
+    panel.innerHTML = `<div class="jcal-head"><div class="jcal-nav"><button type="button" data-jprev aria-label="ماه قبل">‹</button></div><div class="jcal-title">${MONTHS[jm - 1]} ${toFa(jy)}</div><div class="jcal-nav"><button type="button" data-jnext aria-label="ماه بعد">›</button></div></div><div class="jcal-grid">${cells}</div><div class="jcal-foot"><button type="button" data-jtoday>امروز</button>${allowClear ? `<button type="button" data-jclear>پاک کردن</button>` : `<span></span>`}</div>`;
+  };
+  const setMonth = (delta) => {
+    let [y, m] = view; m += delta;
+    if (m < 1) { m = 12; y--; } else if (m > 12) { m = 1; y++; }
+    view = [y, m]; draw(); positionActiveJcal();
+  };
+  const open = () => {
+    if (activeJcal && activeJcal.input === input) { closeActiveJcal(); return; }
+    closeActiveJcal();
+    const iso = parseDateInput(input.value || "");
+    if (iso) view = isoToJ(iso).slice(0, 2);
+    draw(); panel.hidden = false; document.body.appendChild(panel);
+    activeJcal = { input, panel };
+    input.setAttribute("aria-expanded", "true");
+    positionActiveJcal();
+  };
+  input.addEventListener("click", open);
+  input.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(); } });
+  panel.addEventListener("click", (e) => {
+    const prev = e.target.closest("[data-jprev]"), next = e.target.closest("[data-jnext]"), day = e.target.closest("[data-jday]"), todayBtn = e.target.closest("[data-jtoday]"), clear = e.target.closest("[data-jclear]");
+    if (prev) setMonth(-1);
+    else if (next) setMonth(1);
+    else if (day) {
+      const dayNum = Number(day.dataset.jday);
+      if (!jToISO(view[0], view[1], dayNum)) return;
+      input.value = toFa(`${view[0]}/${pad2(view[1])}/${pad2(dayNum)}`);
+      closeActiveJcal();
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+      input.dispatchEvent(new Event("change", { bubbles: true }));
+    } else if (todayBtn) {
+      const [y, m, d] = curJ();
+      input.value = toFa(`${y}/${pad2(m)}/${pad2(d)}`);
+      closeActiveJcal();
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+      input.dispatchEvent(new Event("change", { bubbles: true }));
+    } else if (clear) {
+      input.value = ""; closeActiveJcal();
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+      input.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+  });
+}
+
 const daysBetween = (a, b) => Math.round((Date.UTC(...b.split("-").map((x, i) => (i === 1 ? x - 1 : +x))) - Date.UTC(...a.split("-").map((x, i) => (i === 1 ? x - 1 : +x)))) / 86400000);
 const EMPTY_FILTER = { q: "", type: "all", cat: "", tag: "", from: "", to: "" };
 const isFiltered = (f) => !!(f.q.trim() || f.type !== "all" || f.cat || f.tag || f.from || f.to);
@@ -493,7 +619,7 @@ function csvToTx(rows) {
 
 /* ============ وضعیت و ذخیره‌سازی ============ */
 const $ = (s, el = document) => el.querySelector(s);
-const state = { tab: "tx", txs: [], settings: { opening: 0, unit: "toman" }, mode: "boot", authTab: "login", authInfo: "", legacy: null, legacyDismissed: false, loaded: false, slow: false, noDb: false, expanded: null, confirmDel: null, limit: 60, budgets: {}, goals: [], filter: { ...EMPTY_FILTER }, noPlan: false, schemaOld: false };
+const state = { tab: "tx", txs: [], settings: { opening: 0, unit: "toman" }, mode: "boot", authTab: "login", authInfo: "", legacy: null, legacyDismissed: false, loaded: false, slow: false, noDb: false, expanded: null, confirmDel: null, limit: 60, budgets: {}, goals: [], debts: [], filter: { ...EMPTY_FILTER }, noPlan: false, schemaOld: false, noDebts: false };
 let ref = null;
 let importing = false;
 
@@ -708,7 +834,7 @@ function viewPlan() {
       <div class="bsub"><span>${num(g.saved)} از ${num(g.target)}</span>${dl || "<span></span>"}</div></button>`;
   }).join("");
   const goals = `<div class="sec-row"><div class="sec-h">اهداف پس‌انداز</div><button class="linkbtn" data-act="goal-new">+ هدف جدید</button></div>` +
-    (state.goals.length ? `<div class="list">${grows}</div><p class="hint">مبلغ هدف از موجودی حساب کم نمی‌شود؛ فقط برای پیگیری پس‌انداز است.</p>`
+    (state.goals.length ? `<div class="list">${grows}</div><p class="hint">واریز به هدف از موجودی حساب کم می‌شود و برداشت از هدف دوباره به موجودی حساب اضافه می‌شود.</p>`
       : `<div class="empty"><b>هنوز هدفی نداری</b>مثلاً «سفر» یا «صندوق اضطراری» با مبلغ و تاریخ مقصد، و واریزهایت را ثبت کن.<div style="margin-top:12px"><button class="btn primary sm" data-act="goal-new">ساخت اولین هدف</button></div></div>`);
   return budgets + goals;
 }
@@ -720,6 +846,7 @@ function viewMore() {
     <div class="list menu">
       ${inst}
       <button data-act="sms"><span>وارد کردن از پیامک بلو<small>پیامک‌ها را پیست کن، بررسی کن و ثبت کن</small></span><span aria-hidden="true">‹</span></button>
+      <button data-act="debts"><span>بدهی‌ها و طلب‌ها<small>ببین به چه کسانی بدهکاری یا از چه کسانی طلب داری</small></span><span aria-hidden="true">‹</span></button>
       <button data-act="balance"><span>تنظیم موجودی<small>موجودی واقعی حسابت را بنویس تا با برنامه یکی شود</small></span><span aria-hidden="true">‹</span></button>
       <button data-act="csv-in"><span>وارد کردن فایل CSV<small>مثلاً خروجی برنامه‌ی کامپیوتری یا پشتیبان قبلی</small></span><span aria-hidden="true">‹</span></button>
       <button data-act="csv-out"><span>گرفتن پشتیبان (CSV)<small>${esc(backupLine())}</small></span><span aria-hidden="true">‹</span></button>
@@ -846,6 +973,7 @@ function openTxForm(existing) {
     <div id="fWarn" class="warn" role="alert" hidden></div>
     <button class="btn primary block" id="fSave">${edit ? "ذخیره‌ی تغییرات" : "ثبت"}</button>`, (root) => {
     const amount = $("#fAmount", root), warn = $("#fWarn", root), tin = $("#fTagIn", root);
+    attachJalaliPicker($("#fDate", root));
     const drawTags = () => {
       $("#fTagChips", root).innerHTML = tags.map((g, i) => `<button type="button" class="tag on" data-tagrm="${i}" aria-label="حذف برچسب ${esc(g)}">#${esc(g)} <span aria-hidden="true">×</span></button>`).join("");
       const sug = tagCounts().filter((g) => !tags.includes(g)).slice(0, 8);
@@ -918,6 +1046,8 @@ function openFilter() {
     </div>
     <div class="presets"><button type="button" class="tag" data-pre="this">این ماه</button><button type="button" class="tag" data-pre="prev">ماه قبل</button><button type="button" class="tag" data-pre="d30">۳۰ روز اخیر</button><button type="button" class="tag" data-pre="none">همه‌ی زمان‌ها</button></div>
     <div class="two" style="margin-top:14px"><button class="btn primary" id="ftApply">اعمال</button><button class="btn ghost" id="ftClear">پاک کردن</button></div>`, (root) => {
+    attachJalaliPicker($("#ftFrom", root), { allowClear: true });
+    attachJalaliPicker($("#ftTo", root), { allowClear: true });
     root.querySelectorAll("[data-ft]").forEach((b) => b.addEventListener("click", () => {
       f.type = b.dataset.ft; root.querySelectorAll("[data-ft]").forEach((x) => x.classList.toggle("on", x === b));
     }));
@@ -979,6 +1109,7 @@ function openGoalForm(g) {
     <div class="field"><label for="gDate">تاریخ مقصد (اختیاری)</label><input id="gDate" inputmode="numeric" autocomplete="off" placeholder="۱۴۰۶/۰۱/۱۵" value="${edit && g.deadline ? esc(toFa(showJ(g.deadline))) : ""}"></div>
     <button class="btn primary block" id="ggSave">${edit ? "ذخیره" : "ساخت هدف"}</button>`, (root) => {
     const tg = $("#gTarget", root);
+    attachJalaliPicker($("#gDate", root), { allowClear: true });
     tg.addEventListener("input", () => liveFormat(tg, false));
     $("#ggSave", root).addEventListener("click", async () => {
       const title = $("#gTitle", root).value.trim(), target = parseAmountInput(tg.value, false);
@@ -1013,8 +1144,33 @@ function openGoal(id) {
       if (!a || a <= 0) { toast("مبلغ را درست وارد کن"); amt.focus(); return; }
       const next = g.saved + sign * a;
       if (next < 0) { toast("بیشتر از مبلغ پس‌اندازشده نمی‌شود برداشت"); return; }
-      try { await ref.goal.update(g.id, { saved: next }); closeSheet(); toast(next >= g.target && g.saved < g.target ? "تبریک! به هدفت رسیدی" : sign > 0 ? "واریز ثبت شد" : "برداشت ثبت شد"); }
-      catch (e) { toast("ثبت نشد؛ دوباره امتحان کن"); }
+      const balance = totals().bal;
+      if (sign > 0 && a > balance) {
+        toast(`موجودی کافی نیست؛ موجودی حساب ${fmt(Math.max(0, balance))} ${unitLabel()} است`);
+        return;
+      }
+      const addBtn = $(sign > 0 ? "#gAdd" : "#gSub", root);
+      addBtn.disabled = true;
+      let txId = null;
+      try {
+        // انتقال به هدف باید در موجودی کل هم ثبت شود: واریز = هزینه، برداشت = درآمد.
+        if (sign > 0) {
+          const tx = await ref.add({ date: todayISO(), amount: a, type: "expense", category: "پس‌انداز", note: `واریز به هدف: ${g.title}`, tags: [], ts: Date.now() });
+          txId = tx.id;
+          try { await ref.goal.update(g.id, { saved: next }); }
+          catch (e) { if (txId) await ref.delTransaction(txId); throw e; }
+        } else {
+          await ref.goal.update(g.id, { saved: next });
+          try { await ref.add({ date: todayISO(), amount: a, type: "income", category: "برداشت از پس‌انداز", note: `برداشت از هدف: ${g.title}`, tags: [], ts: Date.now() }); }
+          catch (e) { await ref.goal.update(g.id, { saved: g.saved }); throw e; }
+        }
+        closeSheet();
+        toast(next >= g.target && g.saved < g.target ? "تبریک! به هدفت رسیدی" : sign > 0 ? "واریز ثبت شد و از موجودی حساب کسر شد" : "برداشت ثبت شد و به موجودی حساب اضافه شد");
+      } catch (e) {
+        addBtn.disabled = false;
+        toast("ثبت انتقال کامل نشد؛ دوباره اطلاعات را بررسی کن و تلاش کن");
+        try { await ref.reload(); } catch (_) { /* keep the last known state */ }
+      }
     };
     $("#gAdd", root).addEventListener("click", () => move(1));
     $("#gSub", root).addEventListener("click", () => move(-1));
@@ -1023,6 +1179,107 @@ function openGoal(id) {
       $("#gDelBox", root).innerHTML = `<div class="warn" style="margin-top:12px">این هدف حذف شود؟<div class="btns"><button class="btn danger sm" id="gYes">بله، حذف کن</button><button class="btn ghost sm" id="gNo">نه</button></div></div>`;
       $("#gNo", root).addEventListener("click", () => { $("#gDelBox", root).innerHTML = ""; });
       $("#gYes", root).addEventListener("click", async () => { try { await ref.goal.del(g.id); closeSheet(); toast("هدف حذف شد"); } catch (e) { toast("حذف نشد"); } });
+    });
+  });
+}
+
+/* ---------- بدهی‌ها و طلب‌ها ---------- */
+function debtRemaining(d) { return Math.max(0, Number(d.amount) - Number(d.settled || 0)); }
+function debtKindLabel(kind) { return kind === "payable" ? "بدهی من" : "طلب من"; }
+function openDebts() {
+  if (state.noDebts) {
+    openSheet("بدهی‌ها و طلب‌ها", `<div class="notice" style="margin-top:0"><b>جدول بدهی‌ها هنوز در دیتابیس ساخته نشده است.</b><br>فایل <span class="num">supabase_setup.sql</span> نسخه جدید را در SQL Editor اجرا کن و صفحه را دوباره بارگذاری کن.</div>`);
+    return;
+  }
+  const payable = state.debts.filter(d => d.kind === "payable").reduce((n,d) => n + debtRemaining(d), 0);
+  const receivable = state.debts.filter(d => d.kind === "receivable").reduce((n,d) => n + debtRemaining(d), 0);
+  const rows = state.debts.map(d => {
+    const left = debtRemaining(d), done = left <= 0;
+    return `<button class="row" data-debt="${esc(d.id)}"><span class="ava ${d.kind === "receivable" ? "inc" : ""}">${d.kind === "payable" ? "↗" : "↙"}</span><span class="debt-person-meta"><span class="t">${esc(d.person)}</span><span class="s">${debtKindLabel(d.kind)} · ${done ? "تسویه‌شده" : `مانده ${fmt(left)} ${unitLabel()}`}</span></span><span class="amt ${d.kind === "receivable" ? "inc" : "exp"}">${num(d.amount)}</span></button>`;
+  }).join("");
+  openSheet("بدهی‌ها و طلب‌ها", `
+    <div class="two" style="margin-bottom:14px">
+      <div class="stat" style="background:var(--surface-2);color:var(--fg)"><div class="k">بدهی باقی‌مانده</div><div class="v" style="color:var(--expense)">${num(payable)} <small>${unitLabel()}</small></div></div>
+      <div class="stat" style="background:var(--surface-2);color:var(--fg)"><div class="k">طلب باقی‌مانده</div><div class="v" style="color:var(--income)">${num(receivable)} <small>${unitLabel()}</small></div></div>
+    </div>
+    <p class="hint" style="margin:0 0 12px">ثبت بدهی یا طلب به‌تنهایی موجودی حساب را تغییر نمی‌دهد. فقط وقتی پرداخت یا دریافت واقعی را ثبت کنی، تراکنش متناظر در موجودی حساب اعمال می‌شود.</p>
+    <button class="btn primary block" id="debtNew">+ ثبت بدهی یا طلب</button>
+    ${rows ? `<div class="sec-h">فهرست</div><div class="list">${rows}</div>` : `<div class="empty"><b>هنوز بدهی یا طلبی ثبت نکرده‌ای</b>می‌توانی مبلغ، نام شخص و تاریخ سررسید را ثبت کنی.</div>`}
+  `, root => {
+    $("#debtNew", root).addEventListener("click", () => openDebtForm());
+    root.querySelectorAll("[data-debt]").forEach(el => el.addEventListener("click", () => openDebt(el.dataset.debt)));
+  });
+}
+function openDebtForm(existing) {
+  const edit = !!existing;
+  openSheet(edit ? "ویرایش بدهی یا طلب" : "ثبت بدهی یا طلب", `
+    <div class="field"><label for="dKind">نوع</label><select id="dKind"><option value="payable">من به این شخص بدهکارم</option><option value="receivable">این شخص به من بدهکار است</option></select></div>
+    <div class="field"><label for="dPerson">نام شخص</label><input id="dPerson" maxlength="100" placeholder="مثلاً علی"></div>
+    <div class="field"><label for="dAmount">مبلغ کل (${unitLabel()})</label><input id="dAmount" inputmode="numeric" autocomplete="off" placeholder="۰"></div>
+    <div class="field"><label for="dDue">تاریخ سررسید (اختیاری)</label><input id="dDue" inputmode="none" autocomplete="off" placeholder="انتخاب تاریخ شمسی" value="${edit && existing.due_date ? esc(toFa(showJ(existing.due_date))) : ""}"></div>
+    <div class="field"><label for="dNote">توضیحات (اختیاری)</label><textarea id="dNote" rows="2" maxlength="500" placeholder="توضیح کوتاه"></textarea></div>
+    <button class="btn primary block" id="dSave">${edit ? "ذخیره تغییرات" : "ثبت"}</button>
+    ${edit ? `<p class="hint">مبلغ کل نمی‌تواند کمتر از مبلغ تسویه‌شده باشد.</p>` : ""}
+  `, root => {
+    const kind = $("#dKind", root), person = $("#dPerson", root), amount = $("#dAmount", root), due = $("#dDue", root), note = $("#dNote", root), save = $("#dSave", root);
+    attachJalaliPicker(due, { allowClear: true });
+    if (edit) { kind.value = existing.kind; person.value = existing.person; amount.value = fmtInput(existing.amount); note.value = existing.note || ""; }
+    amount.addEventListener("input", () => liveFormat(amount, false));
+    save.addEventListener("click", async () => {
+      const personValue = person.value.trim(), amountValue = parseAmountInput(amount.value, false), dueRaw = due.value.trim(), dueValue = dueRaw ? parseDateInput(dueRaw) : null;
+      if (dueRaw && !dueValue) { toast("تاریخ سررسید را از تقویم انتخاب کن"); due.focus(); return; }
+      if (!personValue) { toast("نام شخص را وارد کن"); person.focus(); return; }
+      if (!amountValue || amountValue <= 0) { toast("مبلغ را درست وارد کن"); amount.focus(); return; }
+      if (edit && amountValue < Number(existing.settled || 0)) { toast("مبلغ کل از مبلغ تسویه‌شده کمتر است"); return; }
+      save.disabled = true;
+      try {
+        const payload = { kind: kind.value, person: personValue, amount: amountValue, due_date: dueValue, note: note.value.trim() };
+        if (edit) await ref.debt.update(existing.id, payload); else await ref.debt.add({ ...payload, settled: 0 });
+        toast(edit ? "اطلاعات ذخیره شد" : "بدهی یا طلب ثبت شد");
+        openDebts();
+      } catch (e) { save.disabled = false; toast(dbErrorMessage(e, "ثبت اطلاعات انجام نشد")); }
+    });
+  });
+}
+function openDebt(id) {
+  const d = state.debts.find(x => x.id === id); if (!d) return;
+  const left = debtRemaining(d), isPayable = d.kind === "payable", done = left <= 0;
+  openSheet(d.person, `
+    <div class="gsum"><div class="bsub"><span>نوع: ${debtKindLabel(d.kind)}</span><span class="chip ${done ? "ok" : "warn"}">${done ? "تسویه‌شده" : "باقی‌مانده"}</span></div>
+      <div style="font-size:25px;font-weight:700;margin:8px 0">${num(left)} <small style="font-size:13px;font-weight:500">${unitLabel()} مانده</small></div>
+      <div class="bsub"><span>مبلغ کل: ${num(d.amount)}</span><span>تسویه‌شده: ${num(d.settled || 0)}</span></div>
+      ${d.due_date ? `<p class="hint">سررسید: ${esc(showJ(d.due_date))}</p>` : ""}
+      ${d.note ? `<p class="hint">${esc(d.note)}</p>` : ""}
+    </div>
+    ${!done ? `<div class="field" style="margin-top:14px"><label for="dMoveAmt">مبلغ ${isPayable ? "پرداخت" : "دریافت"} (${unitLabel()})</label><input id="dMoveAmt" inputmode="numeric" autocomplete="off" placeholder="۰"></div><button class="btn primary block" id="dMove">ثبت ${isPayable ? "پرداخت بدهی" : "دریافت طلب"}</button>` : ""}
+    <div class="two" style="margin-top:12px"><button class="btn ghost sm" id="dEdit">ویرایش</button><button class="btn danger sm" id="dDelete">حذف</button></div>
+    <div id="dDeleteBox"></div>
+  `, root => {
+    const moveInput = $("#dMoveAmt", root);
+    if (moveInput) {
+      moveInput.addEventListener("input", () => liveFormat(moveInput, false));
+      $("#dMove", root).addEventListener("click", async () => {
+        const amount = parseAmountInput(moveInput.value, false);
+        if (!amount || amount <= 0) { toast("مبلغ را درست وارد کن"); moveInput.focus(); return; }
+        if (amount > left) { toast("مبلغ از مانده بدهی یا طلب بیشتر است"); return; }
+        if (isPayable && amount > totals().bal) { toast(`موجودی کافی نیست؛ موجودی حساب ${fmt(Math.max(0, totals().bal))} ${unitLabel()} است`); return; }
+        const btn = $("#dMove", root); btn.disabled = true;
+        let txId = null;
+        try {
+          const tx = await ref.add({ date: todayISO(), amount, type: isPayable ? "expense" : "income", category: isPayable ? "پرداخت بدهی" : "دریافت طلب", note: `${isPayable ? "پرداخت بدهی به" : "دریافت طلب از"} ${d.person}`, tags: [], ts: Date.now() });
+          txId = tx.id;
+          try { await ref.debt.update(d.id, { settled: Number(d.settled || 0) + amount }); }
+          catch (err) { if (txId) await ref.delTransaction(txId); throw err; }
+          toast(isPayable ? "پرداخت ثبت شد و از موجودی کم شد" : "دریافت ثبت شد و به موجودی اضافه شد");
+          openDebt(id);
+        } catch (err) { btn.disabled = false; toast(dbErrorMessage(err, "ثبت پرداخت یا دریافت کامل نشد")); try { await ref.reload(); } catch (_) {} }
+      });
+    }
+    $("#dEdit", root).addEventListener("click", () => openDebtForm(d));
+    $("#dDelete", root).addEventListener("click", () => {
+      $("#dDeleteBox", root).innerHTML = `<div class="warn" style="margin-top:12px">این سابقه حذف شود؟ تراکنش‌های پرداخت یا دریافت قبلی حذف نمی‌شوند.<div class="btns"><button class="btn danger sm" id="dDeleteYes">بله، حذف کن</button><button class="btn ghost sm" id="dDeleteNo">انصراف</button></div></div>`;
+      $("#dDeleteNo", root).addEventListener("click", () => { $("#dDeleteBox", root).innerHTML = ""; });
+      $("#dDeleteYes", root).addEventListener("click", async () => { try { await ref.debt.del(d.id); toast("سابقه حذف شد"); openDebts(); } catch (e) { toast(dbErrorMessage(e, "حذف انجام نشد")); } });
     });
   });
 }
@@ -1215,6 +1472,7 @@ document.addEventListener("click", async (e) => {
   else if (act === "clear-filter") { state.filter = { ...EMPTY_FILTER }; renderView(); }
   else if (act === "budget-new") openBudget();
   else if (act === "goal-new") openGoalForm();
+  else if (act === "debts") openDebts();
   else if (act === "install") openInstall();
   else if (act === "sms") openSms();
   else if (act === "balance") openBalance();
@@ -1263,13 +1521,15 @@ function makeCloudRef(userId) {
   let listener = null;
   const snap = () => ({ docs: [...docs].map(([id, v]) => ({ id, data: () => v })), metadata: { fromCache: false } });
   const emit = () => { if (listener) listener(snap()); };
-  const cap = { tags: true, plan: true };
+  const cap = { tags: true, plan: true, debts: true };
   const COLS = () => "id,date,amount,type,category,note,created_at" + (cap.tags ? ",tags" : "");
   const GCOLS = "id,title,target,saved,deadline,created_at";
+  const DCOLS = "id,kind,person,amount,settled,due_date,note,created_at";
   const missing = (e) => !!e && (["42703", "42P01", "PGRST204", "PGRST205"].includes(e.code) || /column|relation|schema cache|does not exist/i.test(e.message || ""));
   const rowToDoc = (r) => ({ date: r.date, amount: Number(r.amount), type: r.type, category: r.category || "", note: r.note || "", tags: Array.isArray(r.tags) ? r.tags : [], ts: Date.parse(r.created_at) || 0 });
   const docToRow = (d) => { const o = { date: d.date, amount: d.amount, type: d.type, category: d.category || "", note: d.note || "" }; if (cap.tags) o.tags = parseTags(d.tags || []); return o; };
   const goalDoc = (r) => ({ _k: "goal", title: r.title, target: Number(r.target), saved: Number(r.saved) || 0, deadline: r.deadline || "", ts: Date.parse(r.created_at) || 0 });
+  const debtDoc = (r) => ({ _k: "debt", kind: r.kind, person: r.person, amount: Number(r.amount), settled: Number(r.settled) || 0, due_date: r.due_date || "", note: r.note || "", ts: Date.parse(r.created_at) || 0 });
 
   async function loadAll() {
     const fresh = new Map();
@@ -1292,6 +1552,9 @@ function makeCloudRef(userId) {
       if (go.error) { if (missing(go.error)) cap.plan = false; else throw go.error; }
       else go.data.forEach((r) => fresh.set("g:" + r.id, goalDoc(r)));
     }
+    const de = await sb.from("debts").select(DCOLS).order("created_at", { ascending: true });
+    if (de.error) { if (missing(de.error)) cap.debts = false; else throw de.error; }
+    else de.data.forEach((r) => fresh.set("d:" + r.id, debtDoc(r)));
     docs.clear(); fresh.forEach((v, k) => docs.set(k, v));
   }
 
@@ -1308,6 +1571,11 @@ function makeCloudRef(userId) {
       const { data: row, error } = await sb.from("transactions").update(docToRow(data)).eq("id", id).select(COLS()).single();
       if (error) throw error;
       docs.set(id, rowToDoc(row)); emit();
+    },
+    async delTransaction(id) {
+      const { error } = await sb.from("transactions").delete().eq("id", id);
+      if (error) throw error;
+      docs.delete(id); emit();
     },
     budget: {
       async set(category, amount) {
@@ -1336,6 +1604,28 @@ function makeCloudRef(userId) {
         const { error } = await sb.from("goals").delete().eq("id", id);
         if (error) throw error;
         docs.delete("g:" + id); emit();
+      },
+    },
+    debt: {
+      async add(d) {
+        const rowIn = { user_id: userId, kind: d.kind, person: d.person, amount: Math.round(d.amount), settled: Math.round(d.settled || 0), due_date: d.due_date || null, note: d.note || "" };
+        const { data: row, error } = await sb.from("debts").insert(rowIn).select(DCOLS).single();
+        if (error) throw error;
+        docs.set("d:" + row.id, debtDoc(row)); emit();
+      },
+      async update(id, patch) {
+        const safe = {};
+        for (const k of ["kind", "person", "amount", "settled", "due_date", "note"]) if (k in patch) safe[k] = patch[k];
+        if ("amount" in safe) safe.amount = Math.round(safe.amount);
+        if ("settled" in safe) safe.settled = Math.round(safe.settled);
+        const { data: row, error } = await sb.from("debts").update(safe).eq("id", id).select(DCOLS).single();
+        if (error) throw error;
+        docs.set("d:" + id, debtDoc(row)); emit();
+      },
+      async del(id) {
+        const { error } = await sb.from("debts").delete().eq("id", id);
+        if (error) throw error;
+        docs.delete("d:" + id); emit();
       },
     },
     async addMany(list, onProgress) {
@@ -1371,18 +1661,19 @@ function makeCloudRef(userId) {
 }
 
 function handleSnapshot(snap) {
-  const txs = [], budgets = {}, goals = []; let settings = { opening: 0, unit: "toman" };
+  const txs = [], budgets = {}, goals = [], debts = []; let settings = { opening: 0, unit: "toman" };
   snap.docs.forEach((d) => {
     const v = d.data(); if (!v) return;
     if (d.id === "settings") settings = { opening: Number(v.opening) || 0, unit: v.unit === "rial" ? "rial" : "toman" };
     else if (v._k === "budget") budgets[String(v.category)] = Number(v.amount) || 0;
     else if (v._k === "goal") goals.push({ id: d.id.slice(2), title: String(v.title || ""), target: Number(v.target) || 1, saved: Number(v.saved) || 0, deadline: v.deadline ? String(v.deadline) : "", ts: Number(v.ts) || 0 });
+    else if (v._k === "debt") debts.push({ id: d.id.slice(2), kind: v.kind === "payable" ? "payable" : "receivable", person: String(v.person || ""), amount: Number(v.amount) || 0, settled: Number(v.settled) || 0, due_date: v.due_date ? String(v.due_date) : "", note: String(v.note || ""), ts: Number(v.ts) || 0 });
     else if ((v.type === "income" || v.type === "expense") && Number.isFinite(Number(v.amount))) txs.push({ id: d.id, date: String(v.date), amount: Number(v.amount), type: v.type, category: String(v.category || ""), note: String(v.note || ""), tags: Array.isArray(v.tags) ? parseTags(v.tags) : [], ts: Number(v.ts) || 0 });
   });
   txs.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : b.ts - a.ts));
   goals.sort((a, b) => a.ts - b.ts);
-  state.txs = txs; state.settings = settings; state.budgets = budgets; state.goals = goals; state.loaded = true;
-  if (ref && ref.cap) { state.noPlan = !ref.cap.plan; state.schemaOld = !ref.cap.tags; }
+  state.txs = txs; state.settings = settings; state.budgets = budgets; state.goals = goals; state.debts = debts; state.loaded = true;
+  if (ref && ref.cap) { state.noPlan = !ref.cap.plan; state.schemaOld = !ref.cap.tags; state.noDebts = !ref.cap.debts; }
   render();
 }
 
@@ -1415,7 +1706,7 @@ async function migrateLegacy() {
 
 async function onSession(s) {
   if (s && session && session.user.id === s.user.id) { session = s; return; }
-  if (!s) { session = null; ref = null; state.txs = []; state.loaded = false; state.legacy = null; state.expanded = null; state.budgets = {}; state.goals = []; state.filter = { ...EMPTY_FILTER }; state.mode = "auth"; state.authTab = "login"; render(); return; }
+  if (!s) { session = null; ref = null; state.txs = []; state.loaded = false; state.legacy = null; state.expanded = null; state.budgets = {}; state.goals = []; state.debts = []; state.noDebts = false; state.filter = { ...EMPTY_FILTER }; state.mode = "auth"; state.authTab = "login"; render(); return; }
   session = s; state.loaded = false; state.mode = "app"; state.tab = "tx"; state.limit = 60;
   ref = makeCloudRef(s.user.id);
   state.legacy = readLegacy(); state.legacyDismissed = false;
@@ -1463,7 +1754,11 @@ document.addEventListener("submit", async (e) => {
   btn.disabled = true; msg.textContent = "…";
   try {
     if (kind === "signup") {
-      const { data, error } = await sb.auth.signUp({ email, password: pw });
+      const { data, error } = await sb.auth.signUp({
+        email,
+        password: pw,
+        options: { emailRedirectTo: location.origin + location.pathname }
+      });
       if (error) throw error;
       if (data.session) await onSession(data.session);
       else { state.authTab = "login"; state.authInfo = "حساب ساخته شد. لینک تأییدی که به ایمیلت رفته را بزن، بعد وارد شو."; renderGate(); $("#aMsg").className = "okmsg"; }

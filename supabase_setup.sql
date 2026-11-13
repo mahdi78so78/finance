@@ -39,21 +39,37 @@ create table if not exists public.goals (
   created_at timestamptz not null default now()
 );
 
+create table if not exists public.debts (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null default auth.uid() references auth.users(id) on delete cascade,
+  kind text not null check (kind in ('payable', 'receivable')),
+  person text not null check (char_length(person) between 1 and 100),
+  amount bigint not null check (amount > 0),
+  settled bigint not null default 0 check (settled >= 0 and settled <= amount),
+  due_date date,
+  note text not null default '' check (char_length(note) <= 500),
+  created_at timestamptz not null default now()
+);
+
 alter table public.transactions add column if not exists tags text[] not null default '{}';
 
 create index if not exists transactions_user_date_idx
   on public.transactions (user_id, date desc);
+create index if not exists debts_user_created_idx
+  on public.debts (user_id, created_at desc);
 
 alter table public.transactions enable row level security;
 alter table public.settings enable row level security;
 alter table public.budgets enable row level security;
 alter table public.goals enable row level security;
+alter table public.debts enable row level security;
 
 -- Ensure the browser's public/anon key cannot read or write private financial data.
 revoke all on public.transactions from anon;
 revoke all on public.settings from anon;
 revoke all on public.budgets from anon;
 revoke all on public.goals from anon;
+revoke all on public.debts from anon;
 
 -- The signed-in app needs these table privileges; RLS below still limits rows to auth.uid().
 grant usage on schema public to authenticated;
@@ -61,6 +77,7 @@ grant select, insert, update, delete on public.transactions to authenticated;
 grant select, insert, update, delete on public.settings to authenticated;
 grant select, insert, update, delete on public.budgets to authenticated;
 grant select, insert, update, delete on public.goals to authenticated;
+grant select, insert, update, delete on public.debts to authenticated;
 
 drop policy if exists tx_select_own on public.transactions;
 drop policy if exists tx_insert_own on public.transactions;
@@ -112,6 +129,19 @@ create policy goals_insert_own on public.goals for insert to authenticated
 create policy goals_update_own on public.goals for update to authenticated
   using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
 create policy goals_delete_own on public.goals for delete to authenticated
+  using ((select auth.uid()) = user_id);
+
+drop policy if exists debts_select_own on public.debts;
+drop policy if exists debts_insert_own on public.debts;
+drop policy if exists debts_update_own on public.debts;
+drop policy if exists debts_delete_own on public.debts;
+create policy debts_select_own on public.debts for select to authenticated
+  using ((select auth.uid()) = user_id);
+create policy debts_insert_own on public.debts for insert to authenticated
+  with check ((select auth.uid()) = user_id);
+create policy debts_update_own on public.debts for update to authenticated
+  using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+create policy debts_delete_own on public.debts for delete to authenticated
   using ((select auth.uid()) = user_id);
 
 -- PostgREST schema cache refresh (safe; no data changes).
